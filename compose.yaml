@@ -1,0 +1,11 @@
+services:
+  mysql:
+    image: mysql:8.3
+    hostname: mysql
+    environment:
+      MYSQL_DATABASE: pmllm
+      MYSQL_USER: pmuser
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: rootsecret
+    ports:
+      - '3306:3306'
