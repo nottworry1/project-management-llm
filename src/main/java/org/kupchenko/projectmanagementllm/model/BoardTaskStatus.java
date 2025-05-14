@@ -1,4 +1,4 @@
-package org.kupchnko.projectmanagementllm.model;
+package org.kupchenko.projectmanagementllm.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -12,12 +12,12 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment extends AbstractEntity {
-    private String text;
+public class BoardTaskStatus extends AbstractEntity {
+    @ManyToOne
+    private Board board;
 
     @ManyToOne
-    private Task task;
+    private TaskStatus status;
 
-    @ManyToOne
-    private User user;
+    private int position;
 }

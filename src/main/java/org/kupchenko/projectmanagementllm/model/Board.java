@@ -1,4 +1,4 @@
-package org.kupchnko.projectmanagementllm.model;
+package org.kupchenko.projectmanagementllm.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
