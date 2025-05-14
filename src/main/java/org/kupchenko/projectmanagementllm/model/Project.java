@@ -25,6 +25,9 @@ public class Project extends AbstractEntity {
     @OneToMany(mappedBy = "project")
     private List<Sprint> sprints;
 
-    @ManyToMany(mappedBy = "projects")
+    @ManyToMany(mappedBy = "projectsMembered")
     private List<User> users;
+
+    @ManyToMany(mappedBy = "projectsOwned")
+    private List<User> owners;
 }

@@ -1,0 +1,4 @@
+<div th:fragment="formField(label, name, type, value)">
+    <label th:for="${name}" th:text="${label}"></label>
+    <input th:type="${type}" th:id="${name}" th:name="${name}" th:value="${value}" class="form-control"/>
+</div>

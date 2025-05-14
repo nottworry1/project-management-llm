@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Projects')}"></head>
+
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="container mt-4">
+  <h2>Projects</h2>
+  <a class="btn btn-primary mb-3" th:href="@{/projects/create}">Create New Project</a>
+  <ul>
+    <li th:each="project : ${projects}">
+      <a th:href="@{/projects/{id}(id=${project.id})}" th:text="${project.name}"></a>
+    </li>
+  </ul>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

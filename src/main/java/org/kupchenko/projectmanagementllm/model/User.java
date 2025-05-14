@@ -27,7 +27,10 @@ public class User extends AbstractEntity
     private Set<Role> roles;
 
     @ManyToMany
-    private List<Project> projects;
+    private List<Project> projectsMembered;
+
+    @ManyToMany
+    private List<Project> projectsOwned;
 
     @OneToMany(mappedBy = "assignee")
     private List<Task> assignedTasks;

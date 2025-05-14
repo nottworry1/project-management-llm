@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Project Details')}"></head>
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="container mt-4">
+    <h2 th:text="${project.name}">Project Name</h2>
+    <p><strong>Description:</strong> <span th:text="${project.description}"></span></p>
+
+    <h4>Owners</h4>
+    <ul>
+        <li th:each="owner : ${project.owners}" th:text="${owner.username}"></li>
+    </ul>
+
+    <h4>Members</h4>
+    <ul>
+        <li th:each="user : ${project.users}" th:text="${user.username}"></li>
+    </ul>
+
+    <h4>Sprints</h4>
+    <ul>
+        <li th:each="sprint : ${project.sprints}">
+            <a th:href="@{/sprints/{id}(id=${sprint.id})}" th:text="${sprint.name}"></a>
+        </li>
+    </ul>
+
+    <h4>Tasks</h4>
+    <ul>
+        <li th:each="task : ${project.tasks}">
+            <a th:href="@{/tasks/{id}(id=${task.id})}" th:text="${task.title}"></a>
+        </li>
+    </ul>
+
+    <a th:href="@{/projects/edit/{id}(id=${project.id})}" class="btn btn-primary">Edit Project</a>
+    <a th:href="@{/projects}" class="btn btn-secondary">Back</a>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>

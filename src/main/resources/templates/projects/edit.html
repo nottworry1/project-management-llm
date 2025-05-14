@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Edit Project')}"></head>
+<div th:replace="~{fragments/header :: header}"></div>
+<main class="container mt-4">
+  <h2>Edit Project</h2>
+  <form th:action="@{/projects/{id}(id=${project.id})}" th:object="${project}" method="post">
+    <input type="hidden" th:field="*{id}"/>
+    <div th:replace="~{fragments/form-field :: formField('Name', 'name', 'text', *{name})}"></div>
+    <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
+
+    <div th:replace="~{fragments/form-field :: formField('Description', 'description', 'text', *{description})}"></div>
+    <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+    <a class="btn btn-secondary" th:href="@{/projects}">Cancel</a>
+  </form>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</html>
