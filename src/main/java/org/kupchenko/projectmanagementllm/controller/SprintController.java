@@ -47,12 +47,13 @@ public class SprintController {
     }
 
     @PostMapping
-    public String create(@ModelAttribute Board board,
+    public String create(@PathVariable Long boardId,
                          @Valid @ModelAttribute("sprint") Sprint sprint,
                          BindingResult br) {
         if (br.hasErrors()) {
             return "sprints/form";
         }
+        Board board = boardService.findById(boardId);
         sprint.setBoard(board);
         sprint.setProject(board.getProject());
         sprintService.save(sprint);

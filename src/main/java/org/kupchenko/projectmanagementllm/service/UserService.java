@@ -11,4 +11,6 @@ public interface UserService {
     void registerUser(RegistrationForm form);
 
     boolean emailExists(String email);
+
+    User getCurrentUser();
 }

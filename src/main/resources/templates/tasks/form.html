@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:if="${taskForm.id} == null"
+      th:replace="~{fragments/head :: common-head('New Task')}"></head>
+<head th:if="${taskForm.id} != null"
+      th:replace="~{fragments/head :: common-head('Edit Task')}"></head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container mt-4">
+    <h2 th:text="${taskForm.id} != null ? 'Edit Task' : 'New Task'">Task Form</h2>
+
+    <form th:action="@{${taskForm.id}==null
+                     ? '/projects/' + ${taskForm.projectId} + '/tasks'
+                     : '/projects/' + ${taskForm.projectId} + '/tasks/' + ${taskForm.id}}"
+          th:object="${taskForm}" method="post">
+
+        <input type="hidden" th:field="*{projectId}"/>
+
+        <div th:replace="~{fragments/form-field :: formField('Title','title','text',*{title})}"></div>
+        <div th:replace="~{fragments/error-message :: errorMessage('title')}"></div>
+
+        <div th:replace="~{fragments/form-field :: formField('Description','description','text',*{description})}"></div>
+        <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
+
+        <div class="mb-3">
+            <label for="status">Status</label>
+            <select id="status" th:field="*{taskStatusId}" class="form-control">
+                <option th:each="st : ${taskStatuses}"
+                        th:value="${st.id}"
+                        th:text="${st.name}">Status</option>
+            </select>
+            <div th:replace="~{fragments/error-message :: errorMessage('taskStatusId')}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="reporter">Reporter</label>
+            <select id="reporter" th:field="*{reporterId}" class="form-control">
+                <option th:each="u : ${users}"
+                        th:value="${u.id}"
+                        th:text="${u.username}">Reporter</option>
+            </select>
+            <div th:replace="~{fragments/error-message :: errorMessage('reporterId')}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="assignee">Assignee</label>
+            <select id="assignee" th:field="*{assigneeId}" class="form-control">
+                <option th:each="u : ${users}"
+                        th:value="${u.id}"
+                        th:text="${u.username}">Assignee</option>
+            </select>
+            <div th:replace="~{fragments/error-message :: errorMessage('assigneeId')}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label for="priority">Priority</label>
+            <select id="priority" th:field="*{priority}" class="form-control">
+                <option th:each="p : ${T(org.kupchenko.projectmanagementllm.model.Task.Priority).values()}"
+                        th:value="${p}"
+                        th:text="${p}">Priority</option>
+            </select>
+            <div th:replace="~{fragments/error-message :: errorMessage('priority')}"></div>
+        </div>
+
+        <button class="btn btn-success" type="submit" th:text="${taskForm.id} == null ? 'Save' : 'Update'">Save</button>
+        <a class="btn btn-secondary"
+           th:href="@{/projects/{projectId}/tasks(projectId=${taskForm.projectId})}">
+            Cancel
+        </a>
+    </form>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -6,9 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.dto.RegistrationForm;
 import org.kupchenko.projectmanagementllm.model.Role;
 import org.kupchenko.projectmanagementllm.model.User;
+import org.kupchenko.projectmanagementllm.model.UserDetailsImpl;
 import org.kupchenko.projectmanagementllm.repository.UserRepository;
 import org.kupchenko.projectmanagementllm.service.RoleService;
 import org.kupchenko.projectmanagementllm.service.UserService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -56,5 +58,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean emailExists(String email) {
         return userRepository.existsByEmail(email);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        final Object authentication = SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+
+        if (authentication instanceof UserDetailsImpl userDetails) {
+            return findByEmail(userDetails.getUsername());
+        }
+        return null;
     }
 }

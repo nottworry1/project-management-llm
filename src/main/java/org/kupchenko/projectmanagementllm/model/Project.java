@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,9 +29,25 @@ public class Project extends AbstractEntity {
     @OneToMany(mappedBy = "project")
     private List<Sprint> sprints;
 
-    @ManyToMany(mappedBy = "projectsMembered")
-    private List<User> users;
+    @ManyToMany
+    private List<User> users = new ArrayList<>();
 
-    @ManyToMany(mappedBy = "projectsOwned")
-    private List<User> owners;
+    @ManyToMany
+    private List<User> owners = new ArrayList<>();
+
+    public void addOwner(User user) {
+        owners.add(user);
+    }
+
+    public void removeOwner(User user) {
+        owners.remove(user);
+    }
+
+    public void addUser(User user) {
+        users.add(user);
+    }
+
+    public void removeUser(User user) {
+        users.remove(user);
+    }
 }

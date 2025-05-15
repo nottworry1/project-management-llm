@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.service.ProjectService;
+import org.kupchenko.projectmanagementllm.service.UserService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final UserService userService;
 
     @GetMapping
     public String listProjects(Model model) {
@@ -33,6 +35,7 @@ public class ProjectController {
         if (bindingResult.hasErrors()) {
             return "projects/create";
         }
+        project.addOwner(userService.getCurrentUser());
         projectService.save(project);
         return "redirect:/projects";
     }

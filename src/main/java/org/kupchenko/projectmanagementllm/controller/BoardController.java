@@ -63,7 +63,6 @@ public class BoardController {
                            @PathVariable Long boardId, Model m) {
         Board b = boardService.findById(boardId);
         m.addAttribute("board", b);
-        // load all sprints for the project to choose from
         m.addAttribute("sprints", sprintService.findAllByProject(project));
         return "boards/form";
     }

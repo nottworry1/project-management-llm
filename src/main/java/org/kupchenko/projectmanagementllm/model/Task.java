@@ -1,9 +1,6 @@
 package org.kupchenko.projectmanagementllm.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +17,9 @@ public class Task extends AbstractEntity {
     private String title;
     private String description;
 
+    @Enumerated(EnumType.STRING)
+    private Priority priority;
+
     @ManyToOne
     private Project project;
 
@@ -32,9 +32,6 @@ public class Task extends AbstractEntity {
     @ManyToMany
     private List<Sprint> sprints;
 
-    @ManyToOne
-    private Board board;
-
     @OneToMany(mappedBy = "task")
     private List<Comment> comments;
 
@@ -43,4 +40,10 @@ public class Task extends AbstractEntity {
 
     @ManyToOne
     private TaskStatus taskStatus;
+
+    public enum Priority {
+        LOW,
+        MEDIUM,
+        HIGH
+    }
 }
