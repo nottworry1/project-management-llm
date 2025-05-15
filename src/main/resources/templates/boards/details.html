@@ -28,7 +28,7 @@
   <h3>Sprints</h3>
   <ul>
     <li th:each="sprint : ${board.sprints}">
-      <a th:href="@{/projects/{id}(id=${sprint.getProject().id})/boards/{boardId}(id=${sprint.getBoard().id})/sprints/{sprintId}(id=${sprint.id})}" th:text="${sprint.name}">Sprint name</a>
+      <a th:href="@{/projects/__${sprint.getProject().id}__/boards/__${sprint.getBoard().id}__/sprints/__${sprint.id}__}" th:text="${sprint.name}">Sprint name</a>
     </li>
   </ul>
 

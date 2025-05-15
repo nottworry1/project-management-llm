@@ -71,6 +71,7 @@ public class BoardController {
     @PostMapping("/{boardId}")
     public String update(@ModelAttribute Project project,
                          @PathVariable Long boardId,
+                         @RequestParam(value = "sprintId", required = false) Long sprintId,
                          @Valid @ModelAttribute("board") Board board,
                          BindingResult br, Model m) {
         if (br.hasErrors()) {
@@ -81,8 +82,8 @@ public class BoardController {
         board.setProject(project);
         boardService.save(board);
 
-        if (board.getCurrentSprint() != null) {
-            boardService.linkSprint(board, board.getCurrentSprint());
+        if (sprintId != null) {
+            boardService.linkSprint(board, sprintService.findById(sprintId));
         }
         return "redirect:/projects/" + project.getId() + "/boards";
     }

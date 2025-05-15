@@ -19,7 +19,6 @@ import java.util.List;
 public class Sprint extends AbstractEntity {
     @NotBlank
     private String name;
-    @NotNull
     private String description;
     @NotNull
     private LocalDateTime startDate;

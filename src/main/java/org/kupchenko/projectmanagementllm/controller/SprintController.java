@@ -69,13 +69,14 @@ public class SprintController {
     }
 
     @PostMapping("/{sprintId}")
-    public String update(@ModelAttribute Board board,
-                         @PathVariable Long sprintId,
+    public String update(@PathVariable Long sprintId,
                          @Valid @ModelAttribute("sprint") Sprint sprint,
+                         @PathVariable Long boardId,
                          BindingResult br) {
         if (br.hasErrors()) {
             return "sprints/form";
         }
+        Board board = boardService.findById(boardId);
         sprint.setId(sprintId);
         sprint.setBoard(board);
         sprint.setProject(board.getProject());
