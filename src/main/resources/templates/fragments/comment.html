@@ -1,0 +1,8 @@
+<div th:fragment="commentRow(comment)">
+    <div class="border p-2 mb-2">
+        <p><strong th:text="${comment.user.username}">Author</strong>
+            <small class="text-muted" th:text="${#dates.format(comment.createdAt,'yyyy-MM-dd HH:mm')}">Time</small>
+        </p>
+        <p th:text="${comment.text}">Comment text</p>
+    </div>
+</div>

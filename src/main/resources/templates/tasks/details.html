@@ -19,6 +19,23 @@
        th:href="@{/projects/{projectId}/tasks(projectId=${task.project.id})}">
         Back to Tasks
     </a>
+
+    <h4>Comments</h4>
+    <div th:each="comment : ${comments}"
+         th:insert="~{fragments/comment :: commentRow(comment)}">
+    </div>
+
+    <h5>Add a comment</h5>
+    <form th:action="@{/projects/{projectId}/tasks/{taskId}/comments(projectId=${task.project.id},taskId=${task.id})}"
+          th:object="${newComment}"
+          method="post">
+        <div class="mb-3">
+            <textarea th:field="*{text}" class="form-control" rows="3"></textarea>
+            <div th:replace="~{fragments/error-message :: errorMessage('text')}"></div>
+        </div>
+        <button class="btn btn-primary">Post Comment</button>
+    </form>
+
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
