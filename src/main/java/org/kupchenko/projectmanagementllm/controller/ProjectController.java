@@ -24,10 +24,6 @@ public class ProjectController {
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
-        return fillModelAndReturnCreateForm(model);
-    }
-
-    private static String fillModelAndReturnCreateForm(Model model) {
         model.addAttribute("project", new Project());
         return "projects/create";
     }
@@ -35,42 +31,38 @@ public class ProjectController {
     @PostMapping
     public String createProject(@Valid @ModelAttribute("project") Project project, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
-            return fillModelAndReturnCreateForm(model);
+            return "projects/create";
         }
         projectService.save(project);
         return "redirect:/projects";
     }
 
-    @GetMapping("/{id}")
-    public String showDetails(@PathVariable Long id, Model model) {
-        model.addAttribute("project", projectService.findById(id));
+    @GetMapping("/{projectId}")
+    public String showDetails(@PathVariable Long projectId, Model model) {
+        model.addAttribute("project", projectService.findById(projectId));
         return "projects/details";
     }
 
-    @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        return fillModelAndReturnEditForm(projectService.findById(id), model);
-    }
-
-    private String fillModelAndReturnEditForm(Project project, Model model) {
-        model.addAttribute("project", project);
+    @GetMapping("/edit/{projectId}")
+    public String showEditForm(@PathVariable Long projectId, Model model) {
+        model.addAttribute("project", projectService.findById(projectId));
         return "projects/edit";
     }
 
-    @PostMapping("/{id}")
-    public String updateProject(@PathVariable Long id, @Valid @ModelAttribute("project") Project project, BindingResult bindingResult,
+    @PostMapping("/{projectId}")
+    public String updateProject(@PathVariable Long projectId, @Valid @ModelAttribute("project") Project project, BindingResult bindingResult,
                                 Model model) {
         if (bindingResult.hasErrors()) {
-            return fillModelAndReturnEditForm(project, model);
+            return "projects/edit";
         }
-        project.setId(id);
+        project.setId(projectId);
         projectService.update(project);
         return "redirect:/projects";
     }
 
-    @PostMapping("/delete/{id}")
-    public String deleteProject(@PathVariable Long id) {
-        projectService.deleteById(id);
+    @PostMapping("/delete/{projectId}")
+    public String deleteProject(@PathVariable Long projectId) {
+        projectService.deleteById(projectId);
         return "redirect:/projects";
     }
 }

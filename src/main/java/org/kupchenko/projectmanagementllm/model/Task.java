@@ -40,4 +40,7 @@ public class Task extends AbstractEntity {
 
     @OneToMany(mappedBy = "task")
     private List<Attachment> attachments;
+
+    @ManyToOne
+    private TaskStatus taskStatus;
 }

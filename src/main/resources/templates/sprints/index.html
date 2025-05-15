@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Sprints of ' + ${board.name})}"></head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container mt-4">
+  <h2>Sprints of <span th:text="${board.name}"></span></h2>
+  <a class="btn btn-primary mb-3"
+     th:href="@{sprints/create}">
+    + New Sprint
+  </a>
+  <ul>
+    <li th:each="sprint : ${sprints}">
+      <a th:href="@{sprints/{id}(id=${sprint.id})}"
+         th:text="${sprint.name}">Sprint Name</a>
+      — <small th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}"></small>
+    </li>
+  </ul>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

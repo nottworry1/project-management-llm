@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Board: ' + ${board.name})}"></head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container mt-4">
+  <h2 th:text="${board.name}">Board Name</h2>
+  <p><strong>Project:</strong> <span th:text="${project.name}"></span></p>
+  <p><strong>Project:</strong> <span th:text="${project.id}"></span></p>
+
+  <p><strong>Current Sprint:</strong>
+    <span th:if="${board.currentSprint != null}" th:text="${board.currentSprint.name}"></span>
+    <span th:if="${board.currentSprint == null}">None selected</span>
+  </p>
+
+  <h4>Tasks in this Sprint</h4>
+  <ul th:if="${board.currentSprint != null}">
+    <li th:each="task : ${board.currentSprint.tasks}">
+      <a th:href="@{/tasks/{id}(id=${task.id})}" th:text="${task.title}">Task Title</a>
+      (<span th:text="${task.taskStatus.name}">Status</span>)
+    </li>
+  </ul>
+
+
+
+  <h3>Sprints</h3>
+  <ul>
+    <li th:each="sprint : ${board.sprints}">
+      <a th:href="@{/projects/{id}(id=${sprint.getProject().id})/boards/{boardId}(id=${sprint.getBoard().id})/sprints/{sprintId}(id=${sprint.id})}" th:text="${sprint.name}">Sprint name</a>
+    </li>
+  </ul>
+
+  <a class="btn btn-primary"
+     th:href="@{/projects/__${project.id}__/boards/__${board.id}__/edit}">Edit Board</a>
+  <a class="btn btn-secondary"
+     th:href="@{/projects/{projectId}/boards(projectId=${board.getProject().id})}">Back to Boards</a>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

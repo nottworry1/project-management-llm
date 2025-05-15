@@ -14,6 +14,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "users")
 public class User extends AbstractEntity
 {
     private String username;

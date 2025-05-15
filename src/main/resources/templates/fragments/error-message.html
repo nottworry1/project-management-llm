@@ -1,3 +1,4 @@
-<div th:fragment="errorMessage(field)">
-  <p class="text-danger" th:if="${#fields.hasErrors(field)}" th:errors="*{${field}}"></p>
+<div th:fragment="errorMessage(fieldParameter)">
+  <p class="text-danger" th:if="${#fields.hasErrors(fieldParameter)}"
+     th:text="${#fields.errors(fieldParameter)[0]}"></p>
 </div>
