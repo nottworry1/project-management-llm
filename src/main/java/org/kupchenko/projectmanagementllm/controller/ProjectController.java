@@ -43,6 +43,7 @@ public class ProjectController {
     @GetMapping("/{projectId}")
     public String showDetails(@PathVariable Long projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
+        model.addAttribute("allUsers", userService.findAll());
         return "projects/details";
     }
 
@@ -70,5 +71,34 @@ public class ProjectController {
         projectService.deleteById(projectId);
         return "redirect:/projects";
     }
+
+    @PostMapping("/{id}/members/add")
+    public String addMemberToProject(@PathVariable Long id,
+                                     @RequestParam String username) {
+        projectService.addMember(id, username);
+        return "redirect:/projects/" + id;
+    }
+
+    @PostMapping("/{id}/owners/add")
+    public String promoteToOwner(@PathVariable Long id,
+                                 @RequestParam Long userId) {
+        projectService.promoteToOwner(id, userId);
+        return "redirect:/projects/" + id;
+    }
+
+
+    @PostMapping("/{id}/owners/remove")
+    public String demoteOwner(@PathVariable Long id,
+                              @RequestParam Long userId) {
+        projectService.demoteOwner(id, userId);
+        return "redirect:/projects/" + id;
+    }
+
+    @PostMapping("/{id}/members/remove")
+    public String removeMember(@PathVariable Long id, @RequestParam Long userId) {
+        projectService.removeMember(id, userId);
+        return "redirect:/projects/" + id;
+    }
+
 }
 

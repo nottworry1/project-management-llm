@@ -1,44 +1,282 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="~{fragments/head :: common-head('Project Details')}"></head>
+<head th:replace="~{fragments/head :: common-head(${project.name} + ' • Dashboard')}"></head>
+<body>
 
+<!-- Header -->
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="main-container">
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="container-fluid">
+    <div class="row">
 
-    <main class="container mt-4">
-        <h2 th:text="${project.name}">Project Name</h2>
-        <p><strong>Description:</strong> <span th:text="${project.description}"></span></p>
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 p-0">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+        </div>
 
-        <h4>Owners</h4>
-        <ul>
-            <li th:each="owner : ${project.owners}" th:text="${owner.username}"></li>
-        </ul>
+        <!-- Main Content -->
+        <div class="col-md-9 col-lg-10">
 
-        <h4>Members</h4>
-        <ul>
-            <li th:each="user : ${project.users}" th:text="${user.username}"></li>
-        </ul>
+            <main class="pt-4">
 
-        <h4>Sprints</h4>
-        <ul>
-            <li th:each="sprint : ${project.sprints}">
-                <a th:href="@{/sprints/{id}(id=${sprint.id})}" th:text="${sprint.name}"></a>
-            </li>
-        </ul>
+                <!-- Project Metadata Card -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h1 class="card-title" th:text="${project.name}">Project Name</h1>
+                        <p class="card-text" th:text="${project.description}">Project description goes here.</p>
+                        <p><strong>Owner(s):</strong>
+                            <span th:each="owner,stat : ${project.owners}"
+                                  th:text="${owner.username}"
+                                  th:append="${stat.last} ? ', ' : ''"></span>
+                        </p>
+                    </div>
+                </div>
 
-        <h4>Tasks</h4>
-        <ul>
-            <li th:each="task : ${project.tasks}">
-                <a th:href="@{/tasks/{id}(id=${task.id})}" th:text="${task.title}"></a>
-            </li>
-        </ul>
+                <!-- Nav Tabs -->
+                <ul class="nav nav-tabs mb-4" id="projectTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab"
+                                data-bs-target="#overview" type="button" role="tab">Overview
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="boards-tab" data-bs-toggle="tab"
+                                data-bs-target="#boards" type="button" role="tab">Boards
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="sprints-tab" data-bs-toggle="tab"
+                                data-bs-target="#sprints" type="button" role="tab">Sprints
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="tasks-tab" data-bs-toggle="tab"
+                                data-bs-target="#tasks" type="button" role="tab">Tasks
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="members-tab" data-bs-toggle="tab"
+                                data-bs-target="#members" type="button" role="tab">Members
+                        </button>
+                    </li>
+                </ul>
 
-        <a th:href="@{/projects/edit/{id}(id=${project.id})}" class="btn btn-primary">Edit Project</a>
-        <a th:href="@{/projects}" class="btn btn-secondary">Back</a>
-    </main>
+                <!-- Tab Panes -->
+                <div class="tab-content">
 
+                    <!-- 1. Overview -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+                        <div class="row g-3">
+                            <!-- Total tasks by status -->
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">Task Status</div>
+                                    <div class="card-body">
+                                        <div th:each="stat : ${taskStats}">
+                                            <div class="d-flex justify-content-between">
+                                                <span th:text="${stat.status.name()}">To Do</span>
+                                                <span th:text="${stat.count}">0</span>
+                                            </div>
+                                            <div class="progress mb-2" style="height: 6px;">
+                                                <div class="progress-bar"
+                                                     role="progressbar"
+                                                     th:style="'width:' + ${stat.percentage} + '%;'"
+                                                     th:text="${stat.percentage} + '%'"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Active sprint -->
+                            <!-- Upcoming deadlines -->
+                            <div class="col-md-4">
+                                <div class="card">
+                                    <div class="card-header">Upcoming Deadlines</div>
+                                    <!--                                    <div class="card-body">-->
+                                    <!--                                        <ul class="list-unstyled mb-0">-->
+                                    <!--                                            <li th:each="t : ${upcomingTasks}">-->
+                                    <!--                                                <span th:text="${t.title}">Task</span>-->
+                                    <!--                                                <small class="text-muted"-->
+                                    <!--                                                       th:text="${#temporals.format(t.dueDate,'MM-dd')}">Due</small>-->
+                                    <!--                                            </li>-->
+                                    <!--                                            <li th:if="${upcomingTasks.empty}">No upcoming due dates</li>-->
+                                    <!--                                        </ul>-->
+                                    <!--                                    </div>-->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Boards -->
+                    <div class="tab-pane fade" id="boards" role="tabpanel">
+                        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+                            <div class="col" th:each="b : ${project.boards}">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h5 class="card-title" th:text="${b.name}">Board Name</h5>
+                                        <p>
+                                            Active Sprint:
+                                            <span th:if="${b.currentSprint != null}"><a
+                                                    th:href="@{/boards/{bid}/sprints/{sid}(bid=${b.id}, sid=${b.currentSprint.id})}"
+                                                    th:text="${b.currentSprint.name}">Sprint Name</a><br/><small
+                                                    class="text-muted"
+                                                    th:text="${#temporals.format(b.currentSprint.startDate,'MM/dd')} + ' - ' + ${#temporals.format(b.currentSprint.endDate,'MM/dd')}"></small></span>
+                                            <span th:if="${b.currentSprint == null}">None</span>
+                                        </p>
+                                        <a class="stretched-link"
+                                           th:href="@{/projects/{pid}/boards/{bid}(pid=${project.id}, bid=${b.id})}"></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <a class="card h-100 text-center text-decoration-none text-secondary d-flex align-items-center justify-content-center"
+                                   th:href="@{/projects/{id}/boards/create(id=${project.id})}">
+                                    <i class="bi bi-plus-circle" style="font-size: 2rem;"></i>
+                                    <span class="ms-2">New Board</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- 3. Sprints -->
+                    <div class="tab-pane fade" id="sprints" role="tabpanel">
+                        <div th:each="b : ${project.boards}" class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h5 th:text="${b.name}">Board Name</h5>
+                                <a class="btn btn-sm btn-outline-primary"
+                                   th:href="@{/projects/{pid}/boards/{bid}/sprints/create(pid=${project.id}, bid=${b.id})}">
+                                    + New Sprint
+                                </a>
+                            </div>
+
+                            <ul class="list-group">
+                                <li class="list-group-item d-flex justify-content-between align-items-center"
+                                    th:each="s : ${b.sprints}">
+                                    <a th:href="@{/projects/{pid}/boards/{bid}/sprints/{sid}(pid=${project.id}, bid=${b.id}, sid=${s.id})}"
+                                       th:text="${s.name}">Sprint Name</a>
+                                    <span class="badge bg-primary rounded-pill"
+                                          th:text="${#temporals.format(s.startDate,'MM/dd')} + '—' + ${#temporals.format(s.endDate,'MM/dd')}">Dates</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+
+
+                    <!-- 4. Tasks -->
+                    <div class="tab-pane fade" id="tasks" role="tabpanel">
+                        <div class="d-flex justify-content-between mb-2">
+                            <h5>All Tasks</h5>
+                            <a class="btn btn-outline-primary"
+                               th:href="@{/projects/{id}/tasks/create(id=${project.id})}">+ New Task</a>
+                        </div>
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Status</th>
+                                <th>Priority</th>
+                                <th>Assignee</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="t : ${project.tasks}">
+                                <td><a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id},tid=${t.id})}"
+                                       th:text="${t.title}">Task</a></td>
+                                <td><span class="badge bg-secondary" th:text="${t.taskStatus.name}">Status</span></td>
+                                <td><span class="badge"
+                                          th:text="${t.priority.name}"
+                                          th:classappend="
+                                          ${t.priority.name} == 'LOW' ? 'bg-success' :
+                                          (${t.priority.name} == 'MEDIUM' ? 'bg-warning text-dark' :
+                                          (${t.priority.name} == 'HIGH' ? 'bg-danger' : 'bg-secondary'))"></span>
+                                </td>
+
+                                <td th:text="${t.assignee.username}">Assignee</td>
+                                <!--                                <td th:text="${t.d != null} ? ${#temporals.format(t.dueDate,'MM/dd')} : '—'">Due</td>-->
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="tab-pane fade" id="members" role="tabpanel">
+
+                        <h5 class="mt-3">Owners</h5>
+                        <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+                            <div class="col" th:each="o : ${project.owners}">
+                                <div class="card border-warning">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="card-title mb-1" th:text="${o.username}">Owner</h6>
+                                            <p class="card-text text-warning mb-0">Owner</p>
+                                        </div>
+                                        <form th:action="@{/projects/{id}/owners/remove(id=${project.id})}"
+                                              method="post"
+                                              onsubmit="return confirm('Demote this owner?')">
+                                            <input type="hidden" name="userId" th:value="${o.id}"/>
+                                            <button class="btn btn-sm btn-outline-danger" type="submit"
+                                                    title="Demote Owner">✖
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5>Members</h5>
+                        <div class="row row-cols-1 row-cols-md-2 g-3 mb-4">
+                            <div class="col" th:each="u : ${project.users}">
+                                <div class="card">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="card-title mb-1" th:text="${u.username}">User</h6>
+                                            <p class="card-text text-muted mb-0">Member</p>
+                                        </div>
+                                        <div class="d-flex gap-2">
+                                            <form th:action="@{/projects/{id}/owners/add(id=${project.id})}"
+                                                  method="post"
+                                                  onsubmit="return confirm('Promote to owner?')">
+                                                <input type="hidden" name="userId" th:value="${u.id}"/>
+                                                <button class="btn btn-sm btn-outline-warning" type="submit"
+                                                        title="Promote to Owner">★
+                                                </button>
+                                            </form>
+                                            <form th:action="@{/projects/{id}/members/remove(id=${project.id})}"
+                                                  method="post"
+                                                  onsubmit="return confirm('Remove this member from the project?')">
+                                                <input type="hidden" name="userId" th:value="${u.id}"/>
+                                                <button class="btn btn-sm btn-outline-danger" type="submit"
+                                                        title="Remove Member">✖
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h5>Add New Member</h5>
+                        <form th:action="@{/projects/{id}/members/add(id=${project.id})}" method="post"
+                              class="d-flex gap-2 mt-2">
+                            <input list="user-suggestions" name="username" class="form-control"
+                                   placeholder="Search by username..." required/>
+                            <datalist id="user-suggestions">
+                                <option th:each="u : ${allUsers}" th:value="${u.username}"></option>
+                            </datalist>
+                            <button class="btn btn-primary" type="submit">Add</button>
+                        </form>
+                    </div>
+
+                </div>
+            </main>
+        </div>
+    </div>
 </div>
+
+<!-- Footer -->
 <div th:replace="~{fragments/footer :: footer}"></div>
+
+<!-- Bootstrap JS (make sure you have included in head or before closing body) -->
+</body>
 </html>

@@ -1,25 +1,45 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body th:fragment="sidebar">
-<nav class="bg-light border-end vh-100 p-3" style="width: 250px;">
+<nav class="bg-light border-end vh-100 p-3 overflow-auto" style="width: 250px;">
     <h5 class="mb-3">Projects</h5>
+
     <ul class="nav flex-column">
-        <li class="nav-item mb-1">
+        <li class="nav-item mb-2">
             <a class="btn btn-outline-primary w-100" th:href="@{/projects/create}">+ New Project</a>
         </li>
-        <li class="nav-item" th:each="proj : ${allProjects}">
-            <!--/*@thymesVar id="proj" type="org.kupchenko.projectmanagementllm.model.Project"*/-->
-            <a class="nav-link" th:href="@{/projects/{id}(id=${proj.id})}"
-               th:text="${proj.name}"></a>
-            <ul class="nav flex-column ms-3" th:if="${proj.boards}">
-                <li class="nav-item" th:each="b : ${proj.boards}">
-                    <a class="nav-link small"
-                       th:href="@{/projects/{pid}/boards/{bid}(pid=${proj.id},bid=${b.id})}"
-                       th:text="${b.name}"></a>
-                </li>
-            </ul>
+
+        <li class="nav-item mb-2" th:each="proj : ${allProjects}">
+            <div class="d-flex justify-content-between align-items-center">
+                <!-- Project name as link -->
+                <a class="nav-link p-0 me-2"
+                   th:href="@{/projects/{id}(id=${proj.id})}"
+                   th:text="${proj.name}"></a>
+
+                <!-- Collapse toggle icon -->
+                <button class="btn btn-sm btn-light p-0 border-0"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        th:data-bs-target="'#collapseProj' + ${proj.id}"
+                        aria-expanded="false"
+                        th:aria-controls="'collapseProj' + ${proj.id}">
+                    <i class="bi bi-chevron-down small"></i>
+                </button>
+            </div>
+
+            <!-- Collapsible board list -->
+            <div class="collapse ms-3 mt-1" th:id="'collapseProj' + ${proj.id}">
+                <ul class="nav flex-column small">
+                    <li class="nav-item" th:each="b : ${proj.boards}">
+                        <a class="nav-link"
+                           th:href="@{/projects/{pid}/boards/{bid}(pid=${proj.id},bid=${b.id})}"
+                           th:text="${b.name}"></a>
+                    </li>
+                </ul>
+            </div>
         </li>
     </ul>
 </nav>
 </body>
 </html>
+
