@@ -5,17 +5,21 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<main class="container mt-4">
-    <h2>Boards in <span th:text="${project.name}"></span></h2>
-    <a class="btn btn-primary mb-3"
-       th:href="@{/projects/{projectId}/boards/create(projectId=${project.id})}">+ New Board</a>
-    <ul>
-        <li th:each="board : ${boards}">
-            <a th:href="@{/projects/{projectId}/boards/{boardId}(projectId=${project.id}, boardId=${board.id})}"
-               th:text="${board.name}">Board Name</a>
-        </li>
-    </ul>
-</main>
+<div class="main-container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <main class="container mt-4">
+        <h2>Boards in <span th:text="${project.name}"></span></h2>
+        <a class="btn btn-primary mb-3"
+           th:href="@{/projects/{projectId}/boards/create(projectId=${project.id})}">+ New Board</a>
+        <ul>
+            <li th:each="board : ${boards}">
+                <a th:href="@{/projects/{projectId}/boards/{boardId}(projectId=${project.id}, boardId=${board.id})}"
+                   th:text="${board.name}">Board Name</a>
+            </li>
+        </ul>
+    </main>
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

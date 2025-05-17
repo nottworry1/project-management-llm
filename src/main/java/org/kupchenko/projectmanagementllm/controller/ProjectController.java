@@ -58,8 +58,10 @@ public class ProjectController {
         if (bindingResult.hasErrors()) {
             return "projects/edit";
         }
-        project.setId(projectId);
-        projectService.update(project);
+        Project existingProject = projectService.findById(projectId);
+        existingProject.setName(project.getName());
+        existingProject.setDescription(project.getDescription());
+        projectService.update(existingProject);
         return "redirect:/projects";
     }
 

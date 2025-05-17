@@ -78,9 +78,11 @@ public class SprintController {
             return "sprints/form";
         }
         Board board = boardService.findById(boardId);
-        sprint.setId(sprintId);
-        sprint.setBoard(board);
-        sprint.setProject(board.getProject());
+        Sprint existingSprint = sprintService.findById(sprintId);
+        existingSprint.setName(sprint.getName());
+        existingSprint.setStartDate(sprint.getStartDate());
+        existingSprint.setEndDate(sprint.getEndDate());
+        existingSprint.setDescription(sprint.getDescription());
         sprintService.save(sprint);
         return "redirect:/projects/" + board.getProject().getId() + "/boards/" + board.getId() + "/sprints";
     }

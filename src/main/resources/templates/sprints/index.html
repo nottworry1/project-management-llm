@@ -5,20 +5,24 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<main class="container mt-4">
-  <h2>Sprints of <span th:text="${board.name}"></span></h2>
-  <a class="btn btn-primary mb-3"
-     th:href="@{sprints/create}">
-    + New Sprint
-  </a>
-  <ul>
-    <li th:each="sprint : ${sprints}">
-      <a th:href="@{sprints/{id}(id=${sprint.id})}"
-         th:text="${sprint.name}">Sprint Name</a>
-      — <small th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}"></small>
-    </li>
-  </ul>
-</main>
+<div class="main-container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+    <main class="container mt-4">
+        <h2>Sprints of <span th:text="${board.name}"></span></h2>
+        <a class="btn btn-primary mb-3"
+           th:href="@{sprints/create}">
+            + New Sprint
+        </a>
+        <ul>
+            <li th:each="sprint : ${sprints}">
+                <a th:href="@{sprints/{id}(id=${sprint.id})}"
+                   th:text="${sprint.name}">Sprint Name</a>
+                — <small th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}"></small>
+            </li>
+        </ul>
+    </main>
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

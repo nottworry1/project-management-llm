@@ -29,6 +29,9 @@ public class Project extends AbstractEntity {
     @OneToMany(mappedBy = "project")
     private List<Sprint> sprints;
 
+    @OneToMany(mappedBy = "project")
+    private List<Board> boards;
+
     @ManyToMany
     private List<User> users = new ArrayList<>();
 

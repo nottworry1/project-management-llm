@@ -5,33 +5,38 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<main class="container mt-4">
-  <h2 th:text="${sprint.name}">Sprint Name</h2>
-  <p><strong>Description:</strong> <span th:text="${sprint.description}"></span></p>
-  <p><strong>Start:</strong> <span th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}"></span></p>
-  <p><strong>End:</strong>
-    <span th:if="${sprint.endDate != null}"
-          th:text="${#temporals.format(sprint.endDate, 'yyyy-MM-dd HH:mm')}"></span>
-    <span th:if="${sprint.endDate == null}">N/A</span>
-  </p>
+<div class="main-container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-  <h4>Tasks</h4>
-  <ul>
-    <li th:each="task : ${tasks}">
-      <a th:href="@{/tasks/{id}(id=${task.id})}" th:text="${task.title}">Task Title</a>
-      — <em th:text="${task.taskStatus.name}">Status</em>
-    </li>
-  </ul>
+    <main class="container mt-4">
+        <h2 th:text="${sprint.name}">Sprint Name</h2>
+        <p><strong>Description:</strong> <span th:text="${sprint.description}"></span></p>
+        <p><strong>Start:</strong> <span th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}"></span>
+        </p>
+        <p><strong>End:</strong>
+            <span th:if="${sprint.endDate != null}"
+                  th:text="${#temporals.format(sprint.endDate, 'yyyy-MM-dd HH:mm')}"></span>
+            <span th:if="${sprint.endDate == null}">N/A</span>
+        </p>
 
-  <a class="btn btn-primary"
-     th:href="@{{id}/edit(id=${sprint.id})}">
-    Edit
-  </a>
-  <a class="btn btn-secondary"
-     th:href="@{../sprints}">
-    Back to Sprints
-  </a>
-</main>
+        <h4>Tasks</h4>
+        <ul>
+            <li th:each="task : ${tasks}">
+                <a th:href="@{/tasks/{id}(id=${task.id})}" th:text="${task.title}">Task Title</a>
+                — <em th:text="${task.taskStatus.name}">Status</em>
+            </li>
+        </ul>
+
+        <a class="btn btn-primary"
+           th:href="@{{id}/edit(id=${sprint.id})}">
+            Edit
+        </a>
+        <a class="btn btn-secondary"
+           th:href="@{../sprints}">
+            Back to Sprints
+        </a>
+    </main>
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

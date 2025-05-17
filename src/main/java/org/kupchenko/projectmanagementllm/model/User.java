@@ -27,10 +27,10 @@ public class User extends AbstractEntity
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "users")
     private List<Project> projectsMembered;
 
-    @ManyToMany
+    @ManyToMany(mappedBy = "owners")
     private List<Project> projectsOwned;
 
     @OneToMany(mappedBy = "assignee")

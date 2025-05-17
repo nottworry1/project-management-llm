@@ -28,19 +28,20 @@ public class BoardController {
     }
 
     @GetMapping
-    public String list(@ModelAttribute Project project, Model m) {
+    public String list(@PathVariable Long projectId, Model m) {
+        Project project = projectService.findById(projectId);
         m.addAttribute("boards", boardService.findAllByProject(project));
         return "boards/index";
     }
 
     @GetMapping("/create")
-    public String createForm(@ModelAttribute Project project, Model m) {
+    public String createForm(Model m) {
         m.addAttribute("board", new Board());
         return "boards/form";
     }
 
     @PostMapping
-    public String create(@ModelAttribute Project project,
+    public String create(@PathVariable Long projectId,
                          @Valid @ModelAttribute("board") Board board,
                          BindingResult br,
                          @RequestParam(value = "sprintId", required = false) Long sprintId) {
@@ -53,50 +54,52 @@ public class BoardController {
         } else {
             board.setCurrentSprint(null);
         }
+        Project project = projectService.findById(projectId);
         board.setProject(project);
         boardService.save(board);
         return "redirect:/projects/" + project.getId() + "/boards";
     }
 
     @GetMapping("/{boardId}/edit")
-    public String editForm(@ModelAttribute Project project,
+    public String editForm(@PathVariable Long projectId,
                            @PathVariable Long boardId, Model m) {
         Board b = boardService.findById(boardId);
+        Project project = projectService.findById(projectId);
         m.addAttribute("board", b);
         m.addAttribute("sprints", sprintService.findAllByProject(project));
         return "boards/form";
     }
 
     @PostMapping("/{boardId}")
-    public String update(@ModelAttribute Project project,
+    public String update(@PathVariable Long projectId,
                          @PathVariable Long boardId,
                          @RequestParam(value = "sprintId", required = false) Long sprintId,
                          @Valid @ModelAttribute("board") Board board,
                          BindingResult br, Model m) {
+        Project project = projectService.findById(projectId);
         if (br.hasErrors()) {
             m.addAttribute("sprints", sprintService.findAllByProject(project));
             return "boards/form";
         }
-        board.setId(boardId);
-        board.setProject(project);
-        boardService.save(board);
+        Board existingBoard = boardService.findById(boardId);
+        existingBoard.setName(board.getName());
+        boardService.save(existingBoard);
 
         if (sprintId != null) {
-            boardService.linkSprint(board, sprintService.findById(sprintId));
+            boardService.linkSprint(existingBoard, sprintService.findById(sprintId));
         }
         return "redirect:/projects/" + project.getId() + "/boards";
     }
 
     @PostMapping("/delete/{boardId}")
-    public String delete(@ModelAttribute Project project,
+    public String delete(@PathVariable Long projectId,
                          @PathVariable Long boardId) {
         boardService.delete(boardId);
-        return "redirect:/projects/" + project.getId() + "/boards";
+        return "redirect:/projects/" + projectId + "/boards";
     }
 
     @GetMapping("/{boardId}")
-    public String details(@ModelAttribute Project project,
-                          @PathVariable Long boardId, Model m) {
+    public String details(@PathVariable Long boardId, Model m) {
         Board b = boardService.findById(boardId);
         m.addAttribute("board", b);
         return "boards/details";

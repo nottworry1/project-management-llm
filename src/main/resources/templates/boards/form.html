@@ -5,35 +5,39 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<main class="container mt-4">
-    <h2 th:text="${board.id} != null ? 'Edit Board' : 'New Board'"></h2>
+<div class="main-container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-    <form th:action="${board.id} != null
+    <main class="container mt-4">
+        <h2 th:text="${board.id} != null ? 'Edit Board' : 'New Board'"></h2>
+
+        <form th:action="${board.id} != null
                     ? '/projects/' + ${project.id} + '/boards/' + ${board.id}
                     : '/projects/' + ${project.id} + '/boards'"
-          th:object="${board}" method="post">
+              th:object="${board}" method="post">
 
-        <div th:replace="~{fragments/form-field :: formField('Board Name', 'name', 'text', *{name})}"></div>
-        <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
+            <div th:replace="~{fragments/form-field :: formField('Board Name', 'name', 'text', *{name})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
 
-        <div>
-            <label for="sprint">Current Sprint</label>
-            <select id="sprint" name="sprintId" class="form-control">
-                <option value="" th:text="'-- Select Sprint --'"></option>
-                <option th:each="s : ${board.sprints}"
-                        th:value="${s.id}"
-                        th:text="${s.name}"
-                        th:selected="${s.id == board.currentSprint.id}"></option>
-                </option>
-            </select>
-        </div>
-        <div th:replace="~{fragments/error-message :: errorMessage('currentSprint.id')}"></div>
+            <div>
+                <label for="sprint">Current Sprint</label>
+                <select id="sprint" name="sprintId" class="form-control">
+                    <option value="" th:text="'-- Select Sprint --'"></option>
+                    <option th:each="s : ${board.sprints}"
+                            th:value="${s.id}"
+                            th:text="${s.name}"
+                            th:selected="${s.id == board.currentSprint.id}"></option>
+                    </option>
+                </select>
+            </div>
+            <div th:replace="~{fragments/error-message :: errorMessage('currentSprint.id')}"></div>
 
-        <button type="submit" class="btn btn-success">Save</button>
-        <a class="btn btn-secondary"
-           th:href="@{/projects/{projectId}/boards(projectId=${project.id})}">Cancel</a>
-    </form>
-</main>
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-secondary"
+               th:href="@{/projects/{projectId}/boards(projectId=${project.id})}">Cancel</a>
+        </form>
+    </main>
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>

@@ -8,86 +8,90 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<main class="container mt-4">
-  <h2 th:text="${sprint.id} != null ? 'Edit Sprint' : 'New Sprint'"></h2>
+<div class="main-container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-  <!-- Create form -->
-  <form th:if="${sprint.id} == null"
-        th:action="@{/projects/{projectId}/boards/{boardId}/sprints(projectId=${board.project.id},boardId=${board.id})}"
-        th:object="${sprint}" method="post">
+    <main class="container mt-4">
+        <h2 th:text="${sprint.id} != null ? 'Edit Sprint' : 'New Sprint'"></h2>
 
-    <div th:replace="~{fragments/form-field :: formField('Name','name','text',*{name})}"></div>
-    <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
+        <!-- Create form -->
+        <form th:if="${sprint.id} == null"
+              th:action="@{/projects/{projectId}/boards/{boardId}/sprints(projectId=${board.project.id},boardId=${board.id})}"
+              th:object="${sprint}" method="post">
 
-    <div th:replace="~{fragments/form-field :: formField('Description','description','text',*{description})}"></div>
-    <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
+            <div th:replace="~{fragments/form-field :: formField('Name','name','text',*{name})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
 
-    <div class="mb-3">
-      <label for="startDate">Start Date</label>
-      <input type="datetime-local"
-             id="startDate"
-             name="startDate"
-             th:value="${#temporals.format(sprint.startDate, 'yyyy-MM-dd''T''HH:mm')}"
-             class="form-control"/>
-    </div>
-    <div th:replace="~{fragments/error-message :: errorMessage('startDate')}"></div>
+            <div th:replace="~{fragments/form-field :: formField('Description','description','text',*{description})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
 
-    <div class="mb-3">
-      <label for="endDate">End Date</label>
-      <input type="datetime-local"
-             id="endDate"
-             name="endDate"
-             th:value="${sprint.endDate != null} ? ${#temporals.format(sprint.endDate, 'yyyy-MM-dd''T''HH:mm')} : ''"
-             class="form-control"/>
-    </div>
-    <div th:replace="~{fragments/error-message :: errorMessage('endDate')}"></div>
+            <div class="mb-3">
+                <label for="startDate">Start Date</label>
+                <input type="datetime-local"
+                       id="startDate"
+                       name="startDate"
+                       th:value="${#temporals.format(sprint.startDate, 'yyyy-MM-dd''T''HH:mm')}"
+                       class="form-control"/>
+            </div>
+            <div th:replace="~{fragments/error-message :: errorMessage('startDate')}"></div>
 
-    <button class="btn btn-success" type="submit">Save</button>
-    <a class="btn btn-secondary"
-       th:href="@{../sprints}">
-      Cancel
-    </a>
-  </form>
+            <div class="mb-3">
+                <label for="endDate">End Date</label>
+                <input type="datetime-local"
+                       id="endDate"
+                       name="endDate"
+                       th:value="${sprint.endDate != null} ? ${#temporals.format(sprint.endDate, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                       class="form-control"/>
+            </div>
+            <div th:replace="~{fragments/error-message :: errorMessage('endDate')}"></div>
 
-  <!-- Edit form -->
-  <form th:if="${sprint.id} != null"
-        th:action="@{/projects/{projectId}/boards/{boardId}/sprints/{id}(projectId=${sprint.project.id},boardId=${board.id},id=${sprint.id})}"
-        th:object="${sprint}" method="post">
+            <button class="btn btn-success" type="submit">Save</button>
+            <a class="btn btn-secondary"
+               th:href="@{../sprints}">
+                Cancel
+            </a>
+        </form>
 
-    <div th:replace="~{fragments/form-field :: formField('Name','name','text',*{name})}"></div>
-    <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
+        <!-- Edit form -->
+        <form th:if="${sprint.id} != null"
+              th:action="@{/projects/{projectId}/boards/{boardId}/sprints/{id}(projectId=${sprint.project.id},boardId=${board.id},id=${sprint.id})}"
+              th:object="${sprint}" method="post">
 
-    <div th:replace="~{fragments/form-field :: formField('Description','description','text',*{description})}"></div>
-    <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
+            <div th:replace="~{fragments/form-field :: formField('Name','name','text',*{name})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
 
-    <div class="mb-3">
-      <label for="startDate">Start Date</label>
-      <input type="datetime-local"
-             id="startDate"
-             name="startDate"
-             th:value="${#temporals.format(sprint.startDate, 'yyyy-MM-dd''T''HH:mm')}"
-             class="form-control"/>
-    </div>
-    <div th:replace="~{fragments/error-message :: errorMessage('startDate')}"></div>
+            <div th:replace="~{fragments/form-field :: formField('Description','description','text',*{description})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
 
-    <div class="mb-3">
-      <label for="endDate">End Date</label>
-      <input type="datetime-local"
-             id="endDate"
-             name="endDate"
-             th:value="${sprint.endDate != null} ? ${#temporals.format(sprint.endDate, 'yyyy-MM-dd''T''HH:mm')} : ''"
-             class="form-control"/>
-    </div>
-    <div th:replace="~{fragments/error-message :: errorMessage('endDate')}"></div>
+            <div class="mb-3">
+                <label for="startDate">Start Date</label>
+                <input type="datetime-local"
+                       id="startDate"
+                       name="startDate"
+                       th:value="${#temporals.format(sprint.startDate, 'yyyy-MM-dd''T''HH:mm')}"
+                       class="form-control"/>
+            </div>
+            <div th:replace="~{fragments/error-message :: errorMessage('startDate')}"></div>
 
-    <button class="btn btn-success" type="submit">Update</button>
-    <a class="btn btn-secondary"
-       th:href="@{../../sprints}">
-      Cancel
-    </a>
-  </form>
-</main>
+            <div class="mb-3">
+                <label for="endDate">End Date</label>
+                <input type="datetime-local"
+                       id="endDate"
+                       name="endDate"
+                       th:value="${sprint.endDate != null} ? ${#temporals.format(sprint.endDate, 'yyyy-MM-dd''T''HH:mm')} : ''"
+                       class="form-control"/>
+            </div>
+            <div th:replace="~{fragments/error-message :: errorMessage('endDate')}"></div>
 
+            <button class="btn btn-success" type="submit">Update</button>
+            <a class="btn btn-secondary"
+               th:href="@{../../sprints}">
+                Cancel
+            </a>
+        </form>
+    </main>
+
+</div>
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

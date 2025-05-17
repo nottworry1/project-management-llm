@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: common-head('Create Project')}"></head>
+
 <div th:replace="~{fragments/header :: header}"></div>
-<main class="container mt-4">
-    <h2>Create Project</h2>
-    <form th:action="@{/projects}" th:object="${project}" method="post">
-        <div th:replace="~{fragments/form-field :: formField('Name', 'name', 'text', *{name})}"></div>
-        <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
 
-        <div th:replace="~{fragments/form-field :: formField('Description', 'description', 'text', *{description})}"></div>
-        <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
+<div class="main-container">
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
-        <button type="submit" class="btn btn-success">Save</button>
-        <a class="btn btn-secondary" th:href="@{/projects}">Cancel</a>
-    </form>
-</main>
+    <main class="container mt-4">
+        <h2>Create Project</h2>
+        <form th:action="@{/projects}" th:object="${project}" method="post">
+            <div th:replace="~{fragments/form-field :: formField('Name', 'name', 'text', *{name})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('name')}"></div>
+
+            <div th:replace="~{fragments/form-field :: formField('Description', 'description', 'text', *{description})}"></div>
+            <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
+
+            <button type="submit" class="btn btn-success">Save</button>
+            <a class="btn btn-secondary" th:href="@{/projects}">Cancel</a>
+        </form>
+    </main>
+</div>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
 </html>
