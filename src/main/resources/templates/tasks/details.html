@@ -36,6 +36,44 @@
         <button class="btn btn-primary">Post Comment</button>
     </form>
 
+    <h4>Attachments</h4>
+    <ul>
+        <li th:each="att : ${task.attachments}">
+            <div th:if="${att.contentType.startsWith('image/')}">
+                <a th:href="@{/projects/{projectId}/tasks/{taskId}/attachments/{fn}
+                  (projectId=${task.project.id},taskId=${task.id},fn=${att.filePath})}">
+                    <img th:src="@{/projects/{projectId}/tasks/{taskId}/attachments/{fn}
+                     (projectId=${task.project.id},taskId=${task.id},fn=${att.filePath})}"
+                         style="max-width: 200px; max-height: 200px; object-fit:contain;"
+                         th:alt="${#strings.substringAfter(att.filePath, '_')}" />
+                </a>
+            </div>
+
+            <div th:if="${!att.contentType.startsWith('image/')}">
+                <a th:href="@{/projects/{projectId}/tasks/{taskId}/attachments/{fn}
+                    (projectId=${task.project.id},taskId=${task.id},fn=${att.filePath})}"
+                   th:text="${#strings.substringAfter(att.filePath, '_')}">
+                    Download
+                </a>
+            </div>
+
+            <form th:action="@{/projects/{projectId}/tasks/{taskId}/attachments/{id}/delete
+                       (projectId=${task.project.id},taskId=${task.id},id=${att.id})}"
+                  method="post" style="display:inline">
+                <button class="btn btn-link text-danger p-0">Delete</button>
+            </form>
+        </li>
+    </ul>
+
+    <h5>Upload a file</h5>
+    <form th:action="@{/projects/{projectId}/tasks/{taskId}/attachments(projectId=${task.project.id},taskId=${task.id})}"
+          method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <input type="file" name="file" class="form-control" required/>
+        </div>
+        <button class="btn btn-secondary">Upload</button>
+    </form>
+
 </main>
 
 <div th:replace="~{fragments/footer :: footer}"></div>
