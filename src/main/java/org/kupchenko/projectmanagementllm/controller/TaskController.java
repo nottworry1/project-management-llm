@@ -25,6 +25,7 @@ public class TaskController {
     private final UserService userService;
     private final CommentService commentService;
     private final SprintService sprintService;
+    private final LabelService labelService;
 
     @GetMapping
     public String list(@PathVariable Long projectId, Model model) {
@@ -141,6 +142,7 @@ public class TaskController {
         model.addAttribute("task", task);
         model.addAttribute("comments", commentService.findByTask(task));
         model.addAttribute("newComment", new CommentForm());
+        model.addAttribute("allLabels", labelService.findAll());
         List<Sprint> availableSprints = new ArrayList<>();
         for (Board board : project.getBoards()) {
             availableSprints.addAll(board.getSprints());

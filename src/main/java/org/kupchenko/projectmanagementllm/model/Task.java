@@ -15,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Task extends AbstractEntity {
     private String title;
+
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Enumerated(EnumType.STRING)
@@ -40,6 +42,9 @@ public class Task extends AbstractEntity {
 
     @ManyToOne
     private TaskStatus taskStatus;
+
+    @ManyToOne
+    private Label label;
 
     public enum Priority {
         LOW,
