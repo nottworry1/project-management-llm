@@ -62,7 +62,7 @@ public class TaskController {
 
         Task task = toEntity(form);
         taskService.save(task);
-        return "redirect:/projects/" + form.getProjectId() + "/tasks";
+        return "redirect:/projects/" + form.getProjectId() + "/tasks/" + task.getId();
     }
 
     @GetMapping("/{taskId}/edit")
@@ -105,7 +105,7 @@ public class TaskController {
         task.setReporter(userService.findById(form.getReporterId()));
         task.setPriority(form.getPriority());
         taskService.save(task);
-        return "redirect:/projects/" + form.getProjectId() + "/tasks";
+        return "redirect:/projects/" + form.getProjectId() + "/tasks/" + taskId;
     }
 
     private List<User> mergeMembersAndOwners(Project project) {

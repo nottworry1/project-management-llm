@@ -29,26 +29,28 @@
                 <div class="col-lg-8">
 
                     <div class="mb-3">
-              <span class="badge bg-secondary"
-                    th:text="${task.taskStatus.name}">
-              </span>
+                        <span class="badge bg-secondary" th:text="${task.taskStatus.name}"></span>
                         <span class="badge"
                               th:text="${task.priority}"
                               th:classappend="
                       ${task.priority.name()}=='LOW' ? 'bg-success' :
                       (${task.priority.name()}=='MEDIUM' ? 'bg-warning text-dark' :
                       (${task.priority.name()}=='HIGH' ? 'bg-danger' : 'bg-secondary'))">
-              </span>
+                        </span>
+                        <span class="badge bg-primary" th:text="'Story Points: ' + ${task.storyPoints}">Story Points</span>
                     </div>
 
                     <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <span>Label</span>
-                            <button id="ai-label-btn" type="button" class="btn btn-sm btn-outline-info">AI Suggest</button>
+                            <button id="ai-label-btn" type="button" class="btn btn-sm btn-outline-info">AI Suggest
+                            </button>
                         </div>
                         <div class="card-body d-flex align-items-center gap-2">
-                            <form th:action="@{/projects/{pid}/tasks/{tid}/labels(pid=${project.id},tid=${task.id})}" method="post" class="d-flex gap-2">
-                                <input list="label-suggestions" name="labelName" th:value="${task.label?.name}" class="form-control" placeholder="Select or type label" required/>
+                            <form th:action="@{/projects/{pid}/tasks/{tid}/labels(pid=${project.id},tid=${task.id})}"
+                                  method="post" class="d-flex gap-2">
+                                <input list="label-suggestions" name="labelName" th:value="${task.label?.name}"
+                                       class="form-control" placeholder="Select or type label" required/>
                                 <datalist id="label-suggestions">
                                     <option th:each="lbl : ${allLabels}" th:value="${lbl.name}"></option>
                                 </datalist>
@@ -188,7 +190,8 @@
                                 <ul class="list-unstyled mb-0">
                                     <li th:each="sprint : ${task.sprints}"
                                         class="d-flex justify-content-between align-items-center mb-1">
-                                        <div><span class="text-muted me-1"><i class="bi bi-flag-fill"></i> Sprint:</span>
+                                        <div><span class="text-muted me-1"><i
+                                                class="bi bi-flag-fill"></i> Sprint:</span>
                                             <a th:href="@{/projects/{pid}/boards/{bid}/sprints/{sid}(pid=${project.id}, bid=${sprint.board.id}, sid=${sprint.id})}"
                                                th:text="${sprint.name}">Sprint Name</a>
                                         </div>
@@ -267,10 +270,10 @@
     });
 </script>
 <script th:inline="javascript">
-    document.getElementById('ai-label-btn').addEventListener('click', function() {
+    document.getElementById('ai-label-btn').addEventListener('click', function () {
         const projectId = /*[[${project.id}]]*/ 0;
-        const taskId    = /*[[${task.id}]]*/ 0;
-        const url       = `/projects/${projectId}/tasks/${taskId}/labels/suggest`;
+        const taskId = /*[[${task.id}]]*/ 0;
+        const url = `/projects/${projectId}/tasks/${taskId}/labels/suggest`;
 
         // Disable button while fetching
         const btn = this;

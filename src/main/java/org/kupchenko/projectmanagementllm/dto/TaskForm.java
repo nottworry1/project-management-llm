@@ -21,6 +21,8 @@ public class TaskForm {
     private Long projectId;
     @NotNull
     private Task.Priority priority;
+    @NotNull
+    private Integer storyPoints;
 
     public static TaskForm fromEntity(Task task) {
         TaskForm f = new TaskForm();
@@ -32,6 +34,7 @@ public class TaskForm {
         f.setReporterId(task.getReporter().getId());
         f.setProjectId(task.getProject().getId());
         f.setPriority(task.getPriority());
+        f.setStoryPoints(task.getStoryPoints());
         return f;
     }
 }

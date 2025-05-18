@@ -68,6 +68,13 @@
                 <div th:replace="~{fragments/error-message :: errorMessage('priority')}"></div>
             </div>
 
+            <div class="mb-3">
+                <label for="storyPoints">Story Points</label>
+                <input type="number" id="storyPoints" th:field="*{storyPoints}"
+                       min="0" step="1" class="form-control" placeholder="Enter points"/>
+                <div th:replace="~{fragments/error-message :: errorMessage('storyPoints')}"></div>
+            </div>
+
             <button class="btn btn-success" type="submit" th:text="${taskForm.id} == null ? 'Save' : 'Update'">Save
             </button>
             <a class="btn btn-secondary"
