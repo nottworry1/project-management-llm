@@ -1,5 +1,6 @@
 package org.kupchenko.projectmanagementllm.service;
 
+import jakarta.transaction.Transactional;
 import org.kupchenko.projectmanagementllm.model.Board;
 import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.model.Sprint;
@@ -16,4 +17,7 @@ public interface BoardService {
     void linkSprint(Board board, Sprint sprint);
 
     void delete(Long id);
+
+    @Transactional
+    Sprint closeSprint(Long sprintId);
 }

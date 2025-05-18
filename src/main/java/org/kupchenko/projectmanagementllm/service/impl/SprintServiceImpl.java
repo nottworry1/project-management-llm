@@ -1,24 +1,18 @@
 package org.kupchenko.projectmanagementllm.service.impl;
 
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.model.*;
 import org.kupchenko.projectmanagementllm.repository.SprintRepository;
-import org.kupchenko.projectmanagementllm.service.SprintAnalysisService;
 import org.kupchenko.projectmanagementllm.service.SprintService;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SprintServiceImpl implements SprintService {
     private final SprintRepository sprintRepository;
-    private final SprintAnalysisService sprintAnalysisService;
 
     @Override
     public Sprint findById(Long id) {
@@ -46,17 +40,5 @@ public class SprintServiceImpl implements SprintService {
         return sprintRepository.findByBoard(board);
     }
 
-    @Override
-    @Transactional
-    public Sprint closeSprint(Long sprintId) {
-        Sprint sprint = findById(sprintId);
-        String summary = sprintAnalysisService.analyzeSprint(sprint);
-
-        sprint.setEndDate(LocalDateTime.now());
-        sprint.setClosed(true);
-        sprint.setSummary(summary);
-
-        return sprintRepository.save(sprint);
-    }
 }
 

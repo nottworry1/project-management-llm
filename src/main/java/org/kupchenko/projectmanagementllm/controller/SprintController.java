@@ -116,15 +116,7 @@ public class SprintController {
                               @PathVariable Long projectId,
                               @PathVariable Long boardId,
                               RedirectAttributes redirectAttributes) {
-        Board board = boardService.findById(boardId);
-        if (!board.getCurrentSprint().getId().equals(sprintId) || Boolean.TRUE.equals(board.getCurrentSprint().getClosed())) {
-            throw new IllegalArgumentException("Sprint can't be closed - it is either not current, or already closed");
-        }
-
-        sprintService.closeSprint(sprintId);
-
-        board.setCurrentSprint(null);
-        boardService.save(board);
+        boardService.closeSprint(sprintId);
         redirectAttributes.addFlashAttribute("success", "Sprint closed successfully!");
         return "redirect:/projects/" + projectId + "/boards/" + boardId + "/overview";
     }

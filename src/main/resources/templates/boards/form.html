@@ -25,9 +25,9 @@
                     <option value="" th:text="'-- Select Sprint --'"></option>
                     <option th:each="s : ${board.sprints}"
                             th:value="${s.id}"
+                            th:unless="${s.getClosed()}"
                             th:text="${s.name}"
                             th:selected="${board.currentSprint != null && s.id == board.currentSprint.id}"></option>
-                    </option>
                 </select>
             </div>
             <div th:replace="~{fragments/error-message :: errorMessage('currentSprint.id')}"></div>

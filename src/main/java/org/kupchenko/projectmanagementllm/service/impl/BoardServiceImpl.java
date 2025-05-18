@@ -8,9 +8,11 @@ import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.model.Sprint;
 import org.kupchenko.projectmanagementllm.repository.BoardRepository;
 import org.kupchenko.projectmanagementllm.service.BoardService;
+import org.kupchenko.projectmanagementllm.service.SprintAnalysisService;
 import org.kupchenko.projectmanagementllm.service.SprintService;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -18,6 +20,7 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final SprintService sprintService;
+    private final SprintAnalysisService sprintAnalysisService;
 
     @Override
     public List<Board> findAllByProject(Project project) {
@@ -38,6 +41,10 @@ public class BoardServiceImpl implements BoardService {
     @Override
     @Transactional
     public void linkSprint(Board board, Sprint sprint) {
+        if (Boolean.TRUE.equals(sprint.getClosed())) {
+            throw new IllegalArgumentException("Sprint can't be linked - it is already closed");
+        }
+
         board.addSprint(sprint);
         sprint.setBoard(board);
         sprintService.save(sprint);
@@ -49,6 +56,29 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public Sprint closeSprint(Long sprintId) {
+        Sprint sprint = sprintService.findById(sprintId);
+
+        Board board = sprint.getBoard();
+
+        if (!board.getCurrentSprint().getId().equals(sprintId) || Boolean.TRUE.equals(board.getCurrentSprint().getClosed())) {
+            throw new IllegalArgumentException("Sprint can't be closed - it is either not current, or already closed");
+        }
+
+        String summary = sprintAnalysisService.analyzeSprint(sprint);
+
+        sprint.setEndDate(LocalDateTime.now());
+        sprint.setClosed(true);
+        sprint.setSummary(summary);
+
+        board.setCurrentSprint(null);
+        save(board);
+
+        return sprintService.save(sprint);
     }
 }
 
