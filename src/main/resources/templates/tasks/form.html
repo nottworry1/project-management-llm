@@ -24,9 +24,6 @@
             <div th:replace="~{fragments/form-field :: formField('Title','title','text',*{title})}"></div>
             <div th:replace="~{fragments/error-message :: errorMessage('title')}"></div>
 
-            <div th:replace="~{fragments/form-field :: formField('Description','description','text',*{description})}"></div>
-            <div th:replace="~{fragments/error-message :: errorMessage('description')}"></div>
-
             <div class="mb-3">
                 <label for="status">Status</label>
                 <select id="status" th:field="*{taskStatusId}" class="form-control">

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/head :: common-head('Overview: ' + ${board.name})}"></head>
+<body class="bg-light vh-100 d-flex flex-column">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="container-fluid flex-grow-1 d-flex p-0">
+    <div class="d-flex flex-shrink-0" style="width:250px;">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    </div>
+
+    <main class="flex-grow-1 p-4 overflow-auto">
+
+        <section class="mb-5">
+            <h2>Current Sprint</h2>
+            <div class="card">
+                <div class="card-body">
+                    <div th:if="${currentSprint != null}">
+                        <h5 th:text="${currentSprint.name}"></h5>
+                        <p><strong>Dates:</strong> <span th:text="${#temporals.format(currentSprint.startDate,'yyyy-MM-dd')} + ' to ' + ${#temporals.format(currentSprint.endDate,'yyyy-MM-dd')}"></span></p>
+                        <p><strong>Tasks:</strong> <span th:text="${currentSprint.tasks.size()}"></span></p>
+                        <a th:href="@{/projects/{pid}/boards/{bid}(pid=${project.id},bid=${board.id})}" class="btn btn-primary btn-sm">Go to Board</a>
+                    </div>
+                    <div th:if="${currentSprint == null}">
+                        <p class="text-muted">No active sprint at the moment.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <h2>All Sprints</h2>
+            <div th:if="${#lists.isEmpty(board.sprints)}" class="text-muted">No sprints available.</div>
+            <div class="d-flex flex-wrap gap-4">
+                <div th:each="s : ${board.sprints}" class="border rounded p-3 flex-grow-0" style="min-width: 280px; max-width: 320px; background: #fff;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h5 class="mb-0" th:text="${s.name}"></h5>
+                        <a th:href="@{/projects/{pid}/boards/{bid}/sprints/{sid}(pid=${project.id},bid=${board.id},sid=${s.id})}" class="btn btn-outline-secondary btn-sm">View</a>
+                    </div>
+                    <p class="small text-muted mb-2"><strong>Dates:</strong> <span th:text="${#temporals.format(s.startDate,'MM-dd')} + ' – ' + ${#temporals.format(s.endDate,'MM-dd')}"></span></p>
+                    <div style="max-height: 260px; overflow-y: auto;">
+                        <template th:if="${#lists.isEmpty(s.tasks)}">
+                            <p class="text-muted mb-0">No tasks.</p>
+                        </template>
+                        <div th:each="t : ${s.tasks}" class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #e0e0e0;">
+                            <div class="flex-grow-1">
+                                <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id},tid=${t.id})}" class="fw-semibold text-decoration-none" th:text="${t.title}">Task Title</a>
+                                <div class="small text-muted">
+                                    <span th:text="${t.assignee != null ? t.assignee.username : 'Unassigned'}"></span> /
+                                    <span th:text="${t.reporter != null ? t.reporter.username : 'No reporter'}"></span>
+                                </div>
+                            </div>
+                            <div class="text-end ms-2">
+                                <div class="badge" th:text="${t.priority}" th:classappend="
+                    ${t.priority}=='LOW' ? ' bg-success' :
+                    (${t.priority}=='MEDIUM' ? ' bg-warning text-dark' : ' bg-danger')"></div>
+                                <div class="small mt-1" th:text="${t.taskStatus.name}"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

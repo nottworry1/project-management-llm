@@ -1,6 +1,7 @@
 package org.kupchenko.projectmanagementllm.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
@@ -15,5 +16,11 @@ public class LoginController
         return "authentication/login";
     }
 
+    @PreAuthorize("hasAuthority('ROLE_USER')")
+    @GetMapping("/")
+    public String index()
+    {
+        return "redirect:/projects";
+    }
 }
 

@@ -1,85 +1,254 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/head :: common-head('Task: ' + ${task.title})}"></head>
-<body>
+<body class="bg-light">
+<link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="main-container">
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="container-fluid">
+    <div class="row">
 
-    <main class="container mt-4">
-        <h2 th:text="${task.title}">Task Title</h2>
-        <p><strong>Description:</strong> <span th:text="${task.description}"></span></p>
-        <p><strong>Status:</strong> <span th:text="${task.taskStatus.name}"></span></p>
-        <p><strong>Reporter:</strong> <span th:text="${task.reporter.username}"></span></p>
-
-        <a class="btn btn-primary"
-           th:href="@{/projects/{projectId}/tasks/{taskId}/edit(projectId=${task.project.id},taskId=${task.id})}">
-            Edit
-        </a>
-        <a class="btn btn-secondary"
-           th:href="@{/projects/{projectId}/tasks(projectId=${task.project.id})}">
-            Back to Tasks
-        </a>
-
-        <h4>Comments</h4>
-        <div th:each="comment : ${comments}"
-             th:insert="~{fragments/comment :: commentRow(comment)}">
+        <div class="col-md-3 col-lg-2 p-0">
+            <div th:replace="~{fragments/sidebar :: sidebar}"></div>
         </div>
 
-        <h5>Add a comment</h5>
-        <form th:action="@{/projects/{projectId}/tasks/{taskId}/comments(projectId=${task.project.id},taskId=${task.id})}"
-              th:object="${newComment}"
-              method="post">
-            <div class="mb-3">
-                <textarea th:field="*{text}" class="form-control" rows="3"></textarea>
-                <div th:replace="~{fragments/error-message :: errorMessage('text')}"></div>
-            </div>
-            <button class="btn btn-primary">Post Comment</button>
-        </form>
+        <div class="col-md-9 col-lg-10 p-4">
 
-        <h4>Attachments</h4>
-        <ul>
-            <li th:each="att : ${task.attachments}">
-                <div th:if="${att.contentType.startsWith('image/')}">
-                    <a th:href="@{/projects/{projectId}/tasks/{taskId}/attachments/{fn}
-                  (projectId=${task.project.id},taskId=${task.id},fn=${att.filePath})}">
-                        <img th:src="@{/projects/{projectId}/tasks/{taskId}/attachments/{fn}
-                     (projectId=${task.project.id},taskId=${task.id},fn=${att.filePath})}"
-                             style="max-width: 200px; max-height: 200px; object-fit:contain;"
-                             th:alt="${#strings.substringAfter(att.filePath, '_')}"/>
-                    </a>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 th:text="${task.title}">Task Title</h1>
+                <a class="btn btn-primary"
+                   th:href="@{/projects/{pid}/tasks/{tid}/edit(pid=${project.id},tid=${task.id})}">
+                    Edit
+                </a>
+            </div>
+
+            <div class="row gx-5">
+
+                <div class="col-lg-8">
+
+                    <div class="mb-3">
+              <span class="badge bg-secondary"
+                    th:text="${task.taskStatus.name}">
+              </span>
+                        <span class="badge"
+                              th:text="${task.priority}"
+                              th:classappend="
+                      ${task.priority.name()}=='LOW' ? 'bg-success' :
+                      (${task.priority.name()}=='MEDIUM' ? 'bg-warning text-dark' :
+                      (${task.priority.name()}=='HIGH' ? 'bg-danger' : 'bg-secondary'))">
+              </span>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Description</span>
+                            <button id="edit-description-btn" class="btn btn-sm btn-outline-primary">Edit</button>
+                        </div>
+                        <div class="card-body">
+                            <div id="description-display"
+                                 th:utext="${#strings.escapeXml(task.description).replaceAll('\n','<br/>')}"></div>
+                            <textarea id="raw-markdown" style="display: none;" th:text="${task.description}"></textarea>
+
+                            <form id="description-form"
+                                  th:action="@{/projects/{pid}/tasks/{tid}/description(pid=${project.id}, tid=${task.id})}"
+                                  method="post" style="display: none;">
+                                <div id="editor" style="height: 300px;"></div>
+                                <input type="hidden" name="description" id="description-input"/>
+                                <button type="submit" class="btn btn-sm btn-success mt-2">Save</button>
+                                <button type="button" id="cancel-edit-description"
+                                        class="btn btn-sm btn-secondary mt-2">Cancel
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span>Attachments</span>
+                            <form th:action="@{/projects/{pid}/tasks/{tid}/attachments(pid=${project.id}, tid=${task.id})}"
+                                  method="post" enctype="multipart/form-data" class="d-inline">
+                                <input type="file" name="file" id="attachment-input" hidden
+                                       onchange="this.form.submit()">
+                                <button type="button" class="btn btn-sm btn-outline-primary"
+                                        onclick="document.getElementById('attachment-input').click();">
+                                    Add Attachment
+                                </button>
+                            </form>
+                        </div>
+                        <div class="card-body">
+                            <div class="row gy-3">
+                                <div class="col-6 col-md-4" th:each="att : ${task.attachments}">
+                                    <div class="card position-relative h-100">
+                                        <form th:action="@{/projects/{pid}/tasks/{tid}/attachments/{aid}/delete
+                            (pid=${project.id}, tid=${task.id}, aid=${att.id})}"
+                                              method="post" class="position-absolute top-0 end-0 m-2">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger btn-close"
+                                                    onclick="return confirm('Delete this attachment?')"
+                                                    title="Delete attachment"></button>
+                                        </form>
+
+                                        <a th:if="${att.contentType.startsWith('image/')}"
+                                           th:href="@{/projects/{pid}/tasks/{tid}/attachments/{fn}
+                                (pid=${project.id}, tid=${task.id}, fn=${att.filePath})}">
+                                            <img th:src="@{/projects/{pid}/tasks/{tid}/attachments/{fn}
+                                (pid=${project.id}, tid=${task.id}, fn=${att.filePath})}"
+                                                 class="card-img-top" style="object-fit:cover; height:150px"/>
+                                        </a>
+
+                                        <div class="card-body p-2 text-center">
+                                            <a th:href="@{/projects/{pid}/tasks/{tid}/attachments/{fn}
+                                (pid=${project.id}, tid=${task.id}, fn=${att.filePath})}"
+                                               th:text="${#strings.substringAfter(att.filePath,'_')}">
+                                                Download
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">Comments</div>
+                        <div class="card-body">
+                            <div th:each="c : ${comments}" class="mb-3">
+                                <strong th:text="${c.user.username}">User</strong>
+                                <small class="text-muted ms-2"
+                                       th:text="${#dates.format(c.createdAt,'yyyy-MM-dd HH:mm')}">Date</small>
+                                <p class="mt-1" th:text="${c.text}">Comment text</p>
+                            </div>
+                            <form th:action="@{/projects/{pid}/tasks/{tid}/comments(pid=${project.id},tid=${task.id})}"
+                                  th:object="${newComment}" method="post">
+                  <textarea th:field="*{text}" class="form-control mb-2" rows="3"
+                            placeholder="Add a comment..."></textarea>
+                                <div th:replace="~{fragments/error-message :: errorMessage('text')}"></div>
+                                <button class="btn btn-primary btn-sm">Post Comment</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <div th:if="${!att.contentType.startsWith('image/')}">
-                    <a th:href="@{/projects/{projectId}/tasks/{taskId}/attachments/{fn}
-                    (projectId=${task.project.id},taskId=${task.id},fn=${att.filePath})}"
-                       th:text="${#strings.substringAfter(att.filePath, '_')}">
-                        Download
-                    </a>
+                <div class="col-lg-4">
+                    <div class="card mb-4">
+                        <div class="card-header">People</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Assignee:</strong>
+                                <span th:text="${task.assignee.username}">Assignee</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Reporter:</strong>
+                                <span th:text="${task.reporter.username}">Reporter</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">Dates</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <strong>Created:</strong>
+                                <span th:text="${#dates.format(task.createdAt,'yyyy-MM-dd HH:mm')}">2025-05-01</span>
+                            </li>
+                            <li class="list-group-item">
+                                <strong>Updated:</strong>
+                                <span th:text="${#dates.format(task.updatedAt,'yyyy-MM-dd HH:mm')}">2025-05-10</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header">Location</div>
+                        <ul class="list-group list-group-flush">
+                            <!-- Project -->
+                            <li class="list-group-item"><span class="text-muted me-1"><i class="bi bi-folder2-open"></i> Project:</span>
+                                <a th:href="@{/projects/{pid}(pid=${project.id})}"
+                                   th:text="${project.name}">Project Name</a>
+                            </li>
+
+                            <li class="list-group-item" th:if="${!task.sprints.isEmpty()}">
+                                <ul class="list-unstyled mb-0">
+                                    <li th:each="sprint : ${task.sprints}"
+                                        class="d-flex justify-content-between align-items-center mb-1">
+                                        <div><span class="text-muted me-1"><i class="bi bi-flag-fill"></i> Sprint:</span>
+                                            <a th:href="@{/projects/{pid}/boards/{bid}/sprints/{sid}(pid=${project.id}, bid=${sprint.board.id}, sid=${sprint.id})}"
+                                               th:text="${sprint.name}">Sprint Name</a>
+                                        </div>
+                                        <form th:action="@{/projects/{pid}/tasks/{tid}/sprints/{sid}/remove(pid=${project.id}, tid=${task.id}, sid=${sprint.id})}"
+                                              method="post">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Remove</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+
+                            <li class="list-group-item" th:if="${task.sprints.isEmpty()}">
+                                <span class="text-muted">No sprints</span>
+                            </li>
+
+                            <li class="list-group-item">
+                                <form th:action="@{/projects/{pid}/tasks/{tid}/sprints/add(pid=${project.id}, tid=${task.id})}"
+                                      method="post" class="d-flex gap-2">
+                                    <select name="sprintId" class="form-select">
+                                        <option th:each="sprint : ${availableSprints}"
+                                                th:value="${sprint.id}"
+                                                th:text="${sprint.name}">Sprint
+                                        </option>
+                                    </select>
+                                    <button class="btn btn-sm btn-outline-success" type="submit">Add</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-
-                <form th:action="@{/projects/{projectId}/tasks/{taskId}/attachments/{id}/delete
-                       (projectId=${task.project.id},taskId=${task.id},id=${att.id})}"
-                      method="post" style="display:inline">
-                    <button class="btn btn-link text-danger p-0">Delete</button>
-                </form>
-            </li>
-        </ul>
-
-        <h5>Upload a file</h5>
-        <form th:action="@{/projects/{projectId}/tasks/{taskId}/attachments(projectId=${task.project.id},taskId=${task.id})}"
-              method="post" enctype="multipart/form-data">
-            <div class="mb-3">
-                <input type="file" name="file" class="form-control" required/>
             </div>
-            <button class="btn btn-secondary">Upload</button>
-        </form>
-
-    </main>
-
+        </div>
+    </div>
 </div>
+
 <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
+
+<script>
+    let editor;
+
+    document.getElementById("edit-description-btn").addEventListener("click", function () {
+        document.getElementById("description-display").style.display = "none";
+        document.getElementById("description-form").style.display = "block";
+
+        const rawMarkdown = document.getElementById("raw-markdown").value;
+
+        editor = new toastui.Editor({
+            el: document.getElementById("editor"),
+            height: "300px",
+            initialEditType: "markdown",
+            previewStyle: "vertical",
+            initialValue: rawMarkdown
+        });
+    });
+
+    document.getElementById("cancel-edit-description").addEventListener("click", function () {
+        document.getElementById("description-display").style.display = "block";
+        document.getElementById("description-form").style.display = "none";
+        editor.destroy();
+    });
+
+    document.getElementById("description-form").addEventListener("submit", function () {
+        document.getElementById("description-input").value = editor.getMarkdown();
+    });
+
+    // Render the viewer on page load
+    document.addEventListener("DOMContentLoaded", function () {
+        const markdown = document.getElementById("raw-markdown").value;
+        document.getElementById("description-display").innerHTML = "";
+        new toastui.Editor.factory({
+            el: document.getElementById("description-display"),
+            viewer: true,
+            initialValue: markdown
+        });
+    });
+</script>
+
 </html>

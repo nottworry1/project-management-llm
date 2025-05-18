@@ -26,7 +26,7 @@
                     <option th:each="s : ${board.sprints}"
                             th:value="${s.id}"
                             th:text="${s.name}"
-                            th:selected="${s.id == board.currentSprint.id}"></option>
+                            th:selected="${board.currentSprint != null && s.id == board.currentSprint.id}"></option>
                     </option>
                 </select>
             </div>

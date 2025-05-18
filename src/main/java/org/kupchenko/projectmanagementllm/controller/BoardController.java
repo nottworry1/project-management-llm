@@ -5,13 +5,17 @@ import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.model.Board;
 import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.model.Sprint;
+import org.kupchenko.projectmanagementllm.model.TaskStatus;
 import org.kupchenko.projectmanagementllm.service.BoardService;
 import org.kupchenko.projectmanagementllm.service.ProjectService;
 import org.kupchenko.projectmanagementllm.service.SprintService;
+import org.kupchenko.projectmanagementllm.service.TaskStatusService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/projects/{projectId}/boards")
@@ -21,6 +25,12 @@ public class BoardController {
     private final ProjectService projectService;
     private final BoardService boardService;
     private final SprintService sprintService;
+    private final TaskStatusService taskStatusService;
+
+    @ModelAttribute("taskStatuses")
+    public List<TaskStatus> loadTaskStatuses() {
+        return taskStatusService.findAll();
+    }
 
     @ModelAttribute("project")
     public Project loadProject(@PathVariable("projectId") Long projectId) {
@@ -103,6 +113,26 @@ public class BoardController {
         Board b = boardService.findById(boardId);
         m.addAttribute("board", b);
         return "boards/details";
+    }
+
+    @GetMapping("/{boardId}/overview")
+    public String boardOverview(
+            @PathVariable Long projectId,
+            @PathVariable Long boardId,
+            Model model) {
+
+        Board board = boardService.findById(boardId);
+        model.addAttribute("board", board);
+
+        Sprint currentSprint = board.getCurrentSprint();
+        model.addAttribute("currentSprint", currentSprint);
+
+        List<Sprint> sprints = sprintService.findAllByBoard(board);
+        model.addAttribute("sprints", sprints);
+
+        model.addAttribute("project", projectService.findById(projectId));
+
+        return "boards/board-overview";
     }
 }
 

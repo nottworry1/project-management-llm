@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.model.Task;
 import org.kupchenko.projectmanagementllm.repository.TaskRepository;
+import org.kupchenko.projectmanagementllm.service.SprintService;
 import org.kupchenko.projectmanagementllm.service.TaskService;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
+    private final SprintService sprintService;
 
     @Override
     public List<Task> findAllByProject(Project project) {
