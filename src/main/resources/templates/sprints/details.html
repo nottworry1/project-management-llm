@@ -5,36 +5,87 @@
 
 <div th:replace="~{fragments/header :: header}"></div>
 
-<div class="main-container">
-    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div class="d-flex flex-grow-1 overflow-hidden">
 
-    <main class="container mt-4">
-        <h2 th:text="${sprint.name}">Sprint Name</h2>
-        <p><strong>Description:</strong> <span th:text="${sprint.description}"></span></p>
-        <p><strong>Start:</strong> <span th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}"></span>
-        </p>
-        <p><strong>End:</strong>
-            <span th:if="${sprint.endDate != null}"
-                  th:text="${#temporals.format(sprint.endDate, 'yyyy-MM-dd HH:mm')}"></span>
-            <span th:if="${sprint.endDate == null}">N/A</span>
-        </p>
+    <div class="flex-shrink-0" style="width:250px;">
+        <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    </div>
 
-        <h4>Tasks</h4>
-        <ul>
-            <li th:each="task : ${tasks}">
-                <a th:href="@{/tasks/{id}(id=${task.id})}" th:text="${task.title}">Task Title</a>
-                — <em th:text="${task.taskStatus.name}">Status</em>
-            </li>
-        </ul>
+    <main class="flex-grow-1 container py-4 overflow-auto">
 
-        <a class="btn btn-primary"
-           th:href="@{{id}/edit(id=${sprint.id})}">
-            Edit
-        </a>
-        <a class="btn btn-secondary"
-           th:href="@{../sprints}">
-            Back to Sprints
-        </a>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="mb-0" th:text="${sprint.name}">Sprint Name</h2>
+                <span th:if="${board.currentSprint != null && sprint.id == board.currentSprint.id}"
+                      class="badge bg-primary align-self-center">Active</span>
+                <span th:if="${sprint.getClosed()}"
+                      class="badge bg-danger align-self-center">Closed</span>
+            </div>
+            <div>
+                <a class="btn btn-outline-primary me-2"
+                   th:href="@{{id}/edit(id=${sprint.id})}">Edit</a>
+                <a class="btn btn-secondary"
+                   th:href="@{../sprints}">Back to Sprints</a>
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <p class="mb-2"><strong>Description:</strong></p>
+                <p th:text="${sprint.description} ?: 'No description provided.'" class="text-muted"></p>
+
+                <p class="mb-1">
+                    <strong>Start Date:</strong>
+                    <span th:text="${#temporals.format(sprint.startDate, 'yyyy-MM-dd HH:mm')}">2024-01-01 12:00</span>
+                </p>
+
+                <p class="mb-1">
+                    <strong>End Date:</strong>
+                    <span th:if="${sprint.endDate != null}"
+                          th:text="${#temporals.format(sprint.endDate, 'yyyy-MM-dd HH:mm')}">2024-01-10 12:00</span>
+                    <span th:if="${sprint.endDate == null}">Ongoing</span>
+                </p>
+
+                <div th:if="${sprint.summary != null}" class="mt-3">
+                    <p class="mb-2"><strong>Summary:</strong></p>
+                    <p th:text="${sprint.summary}" class="text-muted"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="mb-0">Tasks</h4>
+                    <span class="badge bg-info text-dark">Total Story Points:<span
+                            th:text="${totalStoryPoints}">0</span></span>
+                </div>
+
+                <div th:if="${#lists.isEmpty(tasks)}" class="text-muted">
+                    No tasks assigned to this sprint.
+                </div>
+
+                <ul class="list-group" th:each="task : ${tasks}">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="ms-2 me-auto">
+                            <div class="fw-bold">
+                                <a th:href="@{/projects/{projectId}/tasks/{id}(projectId=${projectId}, id=${task.id})}"
+                                   class="text-decoration-none"
+                                   th:text="${task.title}">Task Title</a>
+                            </div>
+                            <small class="text-muted">
+                                Status:
+                                <span th:text="${task.taskStatus.name}">In Progress</span>
+                            </small>
+                        </div>
+                        <span class="badge bg-secondary ms-2"
+                              th:if="${task.storyPoints != null}"
+                              th:text="'SP: ' + ${task.storyPoints}">SP: 0</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
     </main>
 </div>
 

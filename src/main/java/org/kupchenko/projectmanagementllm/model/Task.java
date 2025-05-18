@@ -46,6 +46,12 @@ public class Task extends AbstractEntity {
     @ManyToOne
     private Label label;
 
+    private Integer storyPoints;
+
+    public boolean isCompleted() {
+        return taskStatus != null && taskStatus.getName().equalsIgnoreCase("done");
+    }
+
     public enum Priority {
         LOW,
         MEDIUM,

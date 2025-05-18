@@ -4,12 +4,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.model.Board;
 import org.kupchenko.projectmanagementllm.model.Sprint;
+import org.kupchenko.projectmanagementllm.model.Task;
 import org.kupchenko.projectmanagementllm.service.BoardService;
 import org.kupchenko.projectmanagementllm.service.SprintService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 import java.util.Objects;
@@ -26,8 +28,7 @@ public class SprintController {
     public Board loadBoard(@PathVariable Long boardId,
                            @PathVariable Long projectId) {
         Board board = boardService.findById(boardId);
-        if (!Objects.equals(board.getProject().getId(), projectId))
-        {
+        if (!Objects.equals(board.getProject().getId(), projectId)) {
             throw new IllegalArgumentException("Project ID mismatch");
         }
         return board;
@@ -99,9 +100,34 @@ public class SprintController {
                           @PathVariable Long sprintId,
                           Model model) {
         Sprint sprint = sprintService.findById(sprintId);
+        int totalStoryPoints = sprint.getTasks().stream()
+                .filter(t -> t.getStoryPoints() != null)
+                .mapToInt(Task::getStoryPoints)
+                .sum();
+
+        model.addAttribute("totalStoryPoints", totalStoryPoints);
         model.addAttribute("sprint", sprint);
         model.addAttribute("tasks", sprint.getTasks());
         return "sprints/details";
     }
+
+    @PostMapping("{sprintId}/close")
+    public String closeSprint(@PathVariable Long sprintId,
+                              @PathVariable Long projectId,
+                              @PathVariable Long boardId,
+                              RedirectAttributes redirectAttributes) {
+        Board board = boardService.findById(boardId);
+        if (!board.getCurrentSprint().getId().equals(sprintId) || Boolean.TRUE.equals(board.getCurrentSprint().getClosed())) {
+            throw new IllegalArgumentException("Sprint can't be closed - it is either not current, or already closed");
+        }
+
+        sprintService.closeSprint(sprintId);
+
+        board.setCurrentSprint(null);
+        boardService.save(board);
+        redirectAttributes.addFlashAttribute("success", "Sprint closed successfully!");
+        return "redirect:/projects/" + projectId + "/boards/" + boardId + "/overview";
+    }
+
 }
 

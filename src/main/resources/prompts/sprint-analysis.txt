@@ -1,0 +1,23 @@
+You are an expert Agile coach and project analyst.
+You are given the following structured sprint data:
+- Sprint Name: {{name}}
+- Start Date: {{start}}
+- End Date: {{end}}
+- Planned Tasks: {{plannedCount}}
+- Completed Tasks: {{completedCount}}
+- Total Story Points: {{totalPoints}}
+- Completed Story Points: {{donePoints}}
+- Average Cycle Time (days): {{avgCycle}}
+- Sample Blocker Comments: {{blockerSnippets}}
+
+Your task:
+1. Analyze the above data.
+2. Provide a concise, 3-sentence executive summary that highlights:
+   - Major successes of the sprint.
+   - Primary issues or blockers encountered.
+   - One actionable recommendation for the next sprint.
+
+Constraints (follow them strictly without deviation):
+- Return exactly 3 sentences.
+- Do not include any additional explanation or labels.
+- Use professional, clear language.

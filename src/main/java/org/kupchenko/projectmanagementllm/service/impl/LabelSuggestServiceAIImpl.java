@@ -9,6 +9,7 @@ import org.kupchenko.projectmanagementllm.model.Sprint;
 import org.kupchenko.projectmanagementllm.model.Task;
 import org.kupchenko.projectmanagementllm.service.LabelService;
 import org.kupchenko.projectmanagementllm.service.LabelSuggestService;
+import org.kupchenko.projectmanagementllm.service.LlmService;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,7 @@ import java.util.List;
 public class LabelSuggestServiceAIImpl implements LabelSuggestService {
     private final LabelService labelService;
     private final ObjectMapper objectMapper;
-    private final OpenAiChatModel openAiChatModel;
+    private final LlmService llmService;
 
     @Override
     public Label suggestLabel(Task task) {
@@ -47,9 +48,7 @@ public class LabelSuggestServiceAIImpl implements LabelSuggestService {
             String fullPrompt = promptTemplate.replace("{{taskInformation}}", taskInformationString)
                     .replace("{{existingLabels}}", existingLabels.toString());
 
-            String aiResponse = openAiChatModel.call(fullPrompt).trim();
-            System.out.println("AI response: " + aiResponse);
-            System.out.println("full prompt: " + fullPrompt);
+            String aiResponse = llmService.getResponse(fullPrompt);
 
             return labelService.findByNameOptional(aiResponse)
                     .orElseGet(() -> labelService.save(new Label(aiResponse)));

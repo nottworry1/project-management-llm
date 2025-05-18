@@ -32,4 +32,9 @@ public class Sprint extends AbstractEntity {
 
     @ManyToOne
     private Project project;
+
+    private Boolean closed = false;
+
+    @Column(columnDefinition="TEXT")
+    private String summary;
 }

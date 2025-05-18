@@ -23,6 +23,13 @@
                    th:href="@{/projects/{pid}/boards(pid=${project.id})}">Back</a>
                 <a class="btn btn-info"
                    th:href="@{/projects/{pid}/boards/{bid}/overview(pid=${project.id},bid=${board.id})}">Overview</a>
+                <form th:if="${board.currentSprint != null}"
+                      th:action="@{/projects/{pid}/boards/{bid}/sprints/{sid}/close(pid=${project.id}, bid=${board.id}, sid=${board.currentSprint.id})}"
+                      method="post"
+                      style="display: inline;"
+                      onsubmit="return confirm('Are you sure you want to close the current sprint?');">
+                    <button class="btn btn-danger">Close Sprint</button>
+                </form>
             </div>
         </div>
 
@@ -40,31 +47,30 @@
 
                     <div th:if="${board.currentSprint != null}">
                         <div th:with="taskFound=false">
-                            <div th:each="task : ${board.currentSprint.tasks}">
-                                <div th:if="${task.taskStatus.id == status.id}"
-                                     th:with="taskFound=true"
-                                     class="mb-3">
-                                    <div class="card card-hover shadow-sm" style="cursor: grab;" th:attr="data-task-id=${task.id}">
-                                        <div class="card-body p-2">
-                                            <h6 class="card-title mb-1">
-                                                <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id}, tid=${task.id})}"
-                                                   class="stretched-link text-decoration-none"
-                                                   th:text="${task.title}">Task Title</a>
-                                            </h6>
-                                            <div class="d-flex align-items-center mb-1">
-                                                <small th:text="${task.assignee.username}">Assignee</small>
-                                            </div>
-                                            <div class="d-flex justify-content-between align-items-center">
+                            <div th:each="task : ${board.currentSprint.tasks}"
+                                 th:if="${task.taskStatus.id == status.id}"
+                                 class="mb-3"
+                                 th:attr="data-task-id=${task.id}">
+
+                                <div class="card card-hover shadow-sm" style="cursor: grab;">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1">
+                                            <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id},tid=${task.id})}"
+                                               class="stretched-link text-decoration-none"
+                                               th:text="${task.title}">Task Title</a>
+                                        </h6>
+                                        <div class="d-flex align-items-center mb-1">
+                                            <small th:text="${task.assignee.username}">Assignee</small>
+                                        </div>
                                         <span class="badge"
                                               th:text="${task.priority}"
                                               th:classappend="
-                                                ${task.priority} == 'LOW' ? ' bg-success' :
-                                                (${task.priority} == 'MEDIUM' ? ' bg-warning text-dark' : ' bg-danger')">
-                                        </span>
-                                            </div>
-                                        </div>
+                ${task.priority} == 'LOW' ? ' bg-success' :
+                (${task.priority} == 'MEDIUM' ? ' bg-warning text-dark' : ' bg-danger')">
+        </span>
                                     </div>
                                 </div>
+
                             </div>
 
                             <div th:if="${#lists.isEmpty(board.currentSprint.tasks)}"
@@ -105,7 +111,7 @@
                         'Content-Type': 'application/json',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: JSON.stringify({ taskStatusId: newStatus })
+                    body: JSON.stringify({taskStatusId: newStatus})
                 }).then(res => {
                     if (!res.ok) {
                         alert("Failed to update task status.");
