@@ -7,6 +7,7 @@ import org.kupchenko.projectmanagementllm.service.LabelService;
 import org.kupchenko.projectmanagementllm.service.LabelSuggestService;
 import org.kupchenko.projectmanagementllm.service.TaskService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +23,7 @@ public class TaskLabelController {
     private final LabelService labelService;
     private final LabelSuggestService labelSuggestService;
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping()
     public String saveLabel(@PathVariable Long projectId,
                             @PathVariable Long taskId,
@@ -39,6 +41,7 @@ public class TaskLabelController {
         return "redirect:/projects/" + projectId + "/tasks/" + taskId;
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/suggest")
     @ResponseBody
     public ResponseEntity<Map<String, String>> suggestLabel(@PathVariable Long taskId, @PathVariable Long projectId) {

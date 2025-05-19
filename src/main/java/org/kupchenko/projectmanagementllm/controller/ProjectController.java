@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.service.ProjectService;
 import org.kupchenko.projectmanagementllm.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,12 +18,6 @@ public class ProjectController {
 
     private final ProjectService projectService;
     private final UserService userService;
-
-    @GetMapping
-    public String listProjects(Model model) {
-        model.addAttribute("projects", projectService.findAll());
-        return "projects/index";
-    }
 
     @GetMapping("/create")
     public String showCreateForm(Model model) {
@@ -40,6 +35,7 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{projectId}")
     public String showDetails(@PathVariable Long projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
@@ -47,12 +43,14 @@ public class ProjectController {
         return "projects/details";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/edit/{projectId}")
     public String showEditForm(@PathVariable Long projectId, Model model) {
         model.addAttribute("project", projectService.findById(projectId));
         return "projects/edit";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{projectId}")
     public String updateProject(@PathVariable Long projectId, @Valid @ModelAttribute("project") Project project, BindingResult bindingResult,
                                 Model model) {
@@ -66,38 +64,42 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/delete/{projectId}")
     public String deleteProject(@PathVariable Long projectId) {
         projectService.deleteById(projectId);
         return "redirect:/projects";
     }
 
-    @PostMapping("/{id}/members/add")
-    public String addMemberToProject(@PathVariable Long id,
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PostMapping("/{projectId}/members/add")
+    public String addMemberToProject(@PathVariable Long projectId,
                                      @RequestParam String username) {
-        projectService.addMember(id, username);
-        return "redirect:/projects/" + id;
+        projectService.addMember(projectId, username);
+        return "redirect:/projects/" + projectId;
     }
 
-    @PostMapping("/{id}/owners/add")
-    public String promoteToOwner(@PathVariable Long id,
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PostMapping("/{projectId}/owners/add")
+    public String promoteToOwner(@PathVariable Long projectId,
                                  @RequestParam Long userId) {
-        projectService.promoteToOwner(id, userId);
-        return "redirect:/projects/" + id;
+        projectService.promoteToOwner(projectId, userId);
+        return "redirect:/projects/" + projectId;
     }
 
-
-    @PostMapping("/{id}/owners/remove")
-    public String demoteOwner(@PathVariable Long id,
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PostMapping("/{projectId}/owners/remove")
+    public String demoteOwner(@PathVariable Long projectId,
                               @RequestParam Long userId) {
-        projectService.demoteOwner(id, userId);
-        return "redirect:/projects/" + id;
+        projectService.demoteOwner(projectId, userId);
+        return "redirect:/projects/" + projectId;
     }
 
-    @PostMapping("/{id}/members/remove")
-    public String removeMember(@PathVariable Long id, @RequestParam Long userId) {
-        projectService.removeMember(id, userId);
-        return "redirect:/projects/" + id;
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PostMapping("/{projectId}/members/remove")
+    public String removeMember(@PathVariable Long projectId, @RequestParam Long userId) {
+        projectService.removeMember(projectId, userId);
+        return "redirect:/projects/" + projectId;
     }
 
 }

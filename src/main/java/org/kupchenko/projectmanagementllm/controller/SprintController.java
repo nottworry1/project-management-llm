@@ -7,6 +7,7 @@ import org.kupchenko.projectmanagementllm.model.Sprint;
 import org.kupchenko.projectmanagementllm.model.Task;
 import org.kupchenko.projectmanagementllm.service.BoardService;
 import org.kupchenko.projectmanagementllm.service.SprintService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,6 +25,7 @@ public class SprintController {
     private final BoardService boardService;
     private final SprintService sprintService;
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @ModelAttribute("board")
     public Board loadBoard(@PathVariable Long boardId,
                            @PathVariable Long projectId) {
@@ -34,21 +36,28 @@ public class SprintController {
         return board;
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping
-    public String list(@ModelAttribute Board board, Model model) {
+    public String list(@PathVariable Long projectId, @ModelAttribute Board board, Model model) {
         List<Sprint> sprints = sprintService.findAllByBoard(board);
         model.addAttribute("sprints", sprints);
         return "sprints/index";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/create")
-    public String createForm(@ModelAttribute Board board, Model model) {
+    public String createForm(@PathVariable Long projectId, @ModelAttribute Board board, Model model) {
         model.addAttribute("sprint", new Sprint());
         return "sprints/form";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping
-    public String create(@PathVariable Long boardId,
+    public String create(@PathVariable Long projectId,
+                         @PathVariable Long boardId,
                          @Valid @ModelAttribute("sprint") Sprint sprint,
                          BindingResult br) {
         if (br.hasErrors()) {
@@ -61,8 +70,11 @@ public class SprintController {
         return "redirect:/projects/" + board.getProject().getId() + "/boards/" + board.getId() + "/sprints";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{sprintId}/edit")
     public String editForm(@ModelAttribute Board board,
+                           @PathVariable Long projectId,
                            @PathVariable Long sprintId,
                            Model model) {
         Sprint sprint = sprintService.findById(sprintId);
@@ -70,8 +82,11 @@ public class SprintController {
         return "sprints/form";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{sprintId}")
-    public String update(@PathVariable Long sprintId,
+    public String update(@PathVariable Long projectId,
+                         @PathVariable Long sprintId,
                          @Valid @ModelAttribute("sprint") Sprint sprint,
                          @PathVariable Long boardId,
                          BindingResult br) {
@@ -88,15 +103,21 @@ public class SprintController {
         return "redirect:/projects/" + board.getProject().getId() + "/boards/" + board.getId() + "/sprints";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/delete/{sprintId}")
     public String delete(@ModelAttribute Board board,
+                         @PathVariable Long projectId,
                          @PathVariable Long sprintId) {
         sprintService.delete(sprintId);
         return "redirect:/projects/" + board.getProject().getId() + "/boards/" + board.getId() + "/sprints";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{sprintId}")
     public String details(@ModelAttribute Board board,
+                          @PathVariable Long projectId,
                           @PathVariable Long sprintId,
                           Model model) {
         Sprint sprint = sprintService.findById(sprintId);
@@ -111,6 +132,7 @@ public class SprintController {
         return "sprints/details";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("{sprintId}/close")
     public String closeSprint(@PathVariable Long sprintId,
                               @PathVariable Long projectId,

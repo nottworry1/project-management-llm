@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @MappedSuperclass
 @Getter
 @Setter
-public abstract class AbstractEntity {
+public abstract class AbstractEntity implements Comparable<AbstractEntity> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -23,4 +23,12 @@ public abstract class AbstractEntity {
     @UpdateTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     private Timestamp updatedAt;
+
+    @Override
+    public int compareTo(final AbstractEntity o) {
+        if (this.id == null && o.id == null) return 0;
+        if (this.id == null) return -1;
+        if (o.id == null) return 1;
+        return this.id.compareTo(o.id);
+    }
 }

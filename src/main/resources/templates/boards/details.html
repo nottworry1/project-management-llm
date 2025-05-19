@@ -18,13 +18,13 @@
             <h2 class="mb-0" th:text="${board.name}">Board Name</h2>
             <div>
                 <a class="btn btn-outline-primary me-2"
-                   th:href="@{/projects/{pid}/boards/{bid}/edit(pid=${project.id},bid=${board.id})}">Edit</a>
+                   th:href="@{/projects/{pid}/boards/{bid}/edit(pid=${currentProject.id},bid=${board.id})}">Edit</a>
                 <a class="btn btn-secondary me-2"
-                   th:href="@{/projects/{pid}/boards(pid=${project.id})}">Back</a>
+                   th:href="@{/projects/{pid}/boards(pid=${currentProject.id})}">Back</a>
                 <a class="btn btn-info"
-                   th:href="@{/projects/{pid}/boards/{bid}/overview(pid=${project.id},bid=${board.id})}">Overview</a>
+                   th:href="@{/projects/{pid}/boards/{bid}/overview(pid=${currentProject.id},bid=${board.id})}">Overview</a>
                 <form th:if="${board.currentSprint != null}"
-                      th:action="@{/projects/{pid}/boards/{bid}/sprints/{sid}/close(pid=${project.id}, bid=${board.id}, sid=${board.currentSprint.id})}"
+                      th:action="@{/projects/{pid}/boards/{bid}/sprints/{sid}/close(pid=${currentProject.id}, bid=${board.id}, sid=${board.currentSprint.id})}"
                       method="post"
                       style="display: inline;"
                       onsubmit="return confirm('Are you sure you want to close the current sprint?');">
@@ -45,45 +45,42 @@
                 <div class="flex-grow-1 p-2 overflow-auto kanban-column"
                      th:attr="data-status=${status.id}">
 
-                    <div th:if="${board.currentSprint != null}">
-                        <div th:with="taskFound=false">
-                            <div th:each="task : ${board.currentSprint.tasks}"
-                                 th:if="${task.taskStatus.id == status.id}"
-                                 class="mb-3"
-                                 th:attr="data-task-id=${task.id}">
+                    <div th:with="taskFound=false"
+                         th:each="task : ${board.currentSprint.tasks}"
+                         th:if="${board.currentSprint != null} and ${task.taskStatus.id == status.id}"
+                         class="task-card mb-3"
+                         th:attr="data-task-id=${task.id}">
 
-                                <div class="card card-hover shadow-sm" style="cursor: grab;">
-                                    <div class="card-body p-2">
-                                        <h6 class="card-title mb-1">
-                                            <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${project.id},tid=${task.id})}"
-                                               class="stretched-link text-decoration-none"
-                                               th:text="${task.title}">Task Title</a>
-                                        </h6>
-                                        <div class="d-flex align-items-center mb-1">
-                                            <small th:text="${task.assignee.username}">Assignee</small>
-                                        </div>
-                                        <span class="badge"
-                                              th:text="${task.priority}"
-                                              th:classappend="
+                        <div class="card card-hover shadow-sm" style="cursor: grab;">
+                            <div class="card-body p-2">
+                                <h6 class="card-title mb-1">
+                                    <a th:href="@{/projects/{pid}/tasks/{tid}(pid=${currentProject.id},tid=${task.id})}"
+                                       class="stretched-link text-decoration-none"
+                                       th:text="${task.title}">Task Title</a>
+                                </h6>
+                                <div class="d-flex align-items-center mb-1">
+                                    <small th:text="${task.assignee.username}">Assignee</small>
+                                </div>
+                                <span class="badge"
+                                      th:text="${task.priority}"
+                                      th:classappend="
                 ${task.priority} == 'LOW' ? ' bg-success' :
                 (${task.priority} == 'MEDIUM' ? ' bg-warning text-dark' : ' bg-danger')">
         </span>
-                                    </div>
-                                </div>
-
-                            </div>
-
-                            <div th:if="${#lists.isEmpty(board.currentSprint.tasks)}"
-                                 class="text-center text-muted mt-3">
-                                No tasks
                             </div>
                         </div>
+
                     </div>
 
-                    <div th:if="${board.currentSprint == null}" class="text-center text-muted mt-3">
-                        No sprint selected
+                    <div th:if="${#lists.isEmpty(board.currentSprint.tasks)}"
+                         class="text-center text-muted mt-3">
+                        No tasks
                     </div>
                 </div>
+            </div>
+
+            <div th:if="${board.currentSprint == null}" class="text-center text-muted mt-3">
+                No sprint selected
             </div>
         </div>
     </div>
@@ -93,35 +90,38 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script th:inline="javascript">
-    const projectId = /*[[${project.id}]]*/ 0;
+    const projectId = /*[[${currentProject.id}]]*/ 0;
 
     document.querySelectorAll('.kanban-column').forEach(column => {
         new Sortable(column, {
             group: 'kanban',
             animation: 150,
-            onAdd: evt => {
-                const taskElement = evt.item;
-                const taskId = evt.item.querySelector('[data-task-id]')?.getAttribute('data-task-id');
-                const newStatus = column.getAttribute('data-status');
-
-                fetch(`/projects/${projectId}/tasks/${taskId}/status`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
-                    },
-                    body: JSON.stringify({taskStatusId: newStatus})
-                }).then(res => {
-                    if (!res.ok) {
-                        alert("Failed to update task status.");
-                    }
-                }).catch(error => {
-                    console.error('Error updating task:', error);
-                });
-            }
+            draggable: '.task-card',    // now matches direct children
+            handle:   '.card-body',     // only start drag from inside the card body
+            ghostClass: 'sortable-ghost',
+            onAdd: handleStatusChange
         });
     });
+
+    function handleStatusChange(evt) {
+        const taskId    = evt.item.getAttribute('data-task-id');
+        const newStatus = evt.to.getAttribute('data-status');
+
+        fetch(`/projects/${projectId}/tasks/${taskId}/status`, {
+            method: 'POST',
+            headers: {
+                'Content-Type':     'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ taskStatusId: newStatus })
+        })
+            .then(res => {
+                if (!res.ok) alert("Failed to update task status.");
+            })
+            .catch(console.error);
+    }
 </script>
 
 

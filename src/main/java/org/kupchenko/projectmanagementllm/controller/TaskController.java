@@ -7,6 +7,7 @@ import org.kupchenko.projectmanagementllm.dto.TaskForm;
 import org.kupchenko.projectmanagementllm.model.*;
 import org.kupchenko.projectmanagementllm.service.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,6 +28,7 @@ public class TaskController {
     private final SprintService sprintService;
     private final LabelService labelService;
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping
     public String list(@PathVariable Long projectId, Model model) {
         Project project = projectService.findById(projectId);
@@ -35,6 +37,7 @@ public class TaskController {
         return "tasks/index";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/create")
     public String createForm(@PathVariable Long projectId, Model model) {
         Project project = projectService.findById(projectId);
@@ -48,8 +51,11 @@ public class TaskController {
         return "tasks/form";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping
-    public String create(@Valid @ModelAttribute("taskForm") TaskForm form,
+    public String create(@PathVariable Long projectId,
+                         @Valid @ModelAttribute("taskForm") TaskForm form,
                          BindingResult br,
                          Model model) {
         if (br.hasErrors()) {
@@ -65,6 +71,7 @@ public class TaskController {
         return "redirect:/projects/" + form.getProjectId() + "/tasks/" + task.getId();
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{taskId}/edit")
     public String editForm(@PathVariable Long projectId,
                            @PathVariable Long taskId,
@@ -86,10 +93,13 @@ public class TaskController {
         return "tasks/form";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{taskId}")
     public String update(@Valid @ModelAttribute("taskForm") TaskForm form,
                          BindingResult br,
                          @PathVariable Long taskId,
+                         @PathVariable Long projectId,
                          Model model) {
         if (br.hasErrors()) {
             Project project = projectService.findById(form.getProjectId());
@@ -114,6 +124,7 @@ public class TaskController {
         return list;
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{taskId}/delete")
     public String delete(@PathVariable Long projectId,
                          @PathVariable Long taskId) {
@@ -121,6 +132,7 @@ public class TaskController {
         return "redirect:/projects/" + projectId + "/tasks";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{taskId}")
     public String details(@PathVariable Long projectId,
                           @PathVariable Long taskId,
@@ -154,6 +166,7 @@ public class TaskController {
         return "tasks/details";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{taskId}/comments")
     public String addComment(@PathVariable Long projectId,
                              @PathVariable Long taskId,
@@ -167,6 +180,7 @@ public class TaskController {
         return "redirect:/projects/" + projectId + "/tasks/" + taskId;
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{taskId}/sprints/add")
     public String addSprintToTask(@PathVariable Long projectId,
                                   @PathVariable Long taskId,
@@ -183,6 +197,7 @@ public class TaskController {
         return "redirect:/projects/" + projectId + "/tasks/" + taskId;
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{taskId}/sprints/{sprintId}/remove")
     public String removeSprintFromTask(@PathVariable Long projectId,
                                        @PathVariable Long taskId,
@@ -196,6 +211,7 @@ public class TaskController {
         return "redirect:/projects/" + projectId + "/tasks/" + taskId;
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{taskId}/description")
     public String updateDescription(@PathVariable Long projectId,
                                     @PathVariable Long taskId,
@@ -227,7 +243,8 @@ public class TaskController {
         return task;
     }
 
-    @PostMapping("{taskId}/status")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PostMapping("/{taskId}/status")
     public ResponseEntity<?> updateTaskStatus(
             @PathVariable Long projectId,
             @PathVariable Long taskId,

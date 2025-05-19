@@ -5,35 +5,72 @@
     <h5 class="mb-3">Projects</h5>
 
     <ul class="nav flex-column">
-        <li class="nav-item mb-2">
+        <!-- New Project Button -->
+        <li class="nav-item mb-3">
             <a class="btn btn-outline-primary w-100" th:href="@{/projects/create}">+ New Project</a>
         </li>
 
-        <li class="nav-item mb-2" th:each="proj : ${allProjects}">
-            <div class="d-flex justify-content-between align-items-center">
-                <!-- Project name as link -->
-                <a class="nav-link p-0 me-2"
-                   th:href="@{/projects/{id}(id=${proj.id})}"
-                   th:text="${proj.name}"></a>
+        <li class="nav-item mb-2"
+            th:each="proj : ${#lists.sort(allProjects)}">
+            <!--/*@thymesVar id="proj" type="org.kupchenko.projectmanagementllm.model.Project"*/-->
 
-                <!-- Collapse toggle icon -->
+            <div class="d-flex justify-content-between align-items-center">
+                <a class="nav-link flex-grow-1 p-0"
+                   th:href="@{/projects/{id}(id=${proj.id})}"
+                   th:text="${proj.name}"
+                   th:classappend="${currentProject != null && currentProject.id == proj.id} ? 'fw-bold text-success'">
+                </a>
+
+                <!-- Collapse toggle -->
                 <button class="btn btn-sm btn-light p-0 border-0"
                         type="button"
                         data-bs-toggle="collapse"
-                        th:data-bs-target="'#collapseProj' + ${proj.id}"
+                        th:data-bs-target="'#projBoards' + ${proj.id}"
                         aria-expanded="false"
-                        th:aria-controls="'collapseProj' + ${proj.id}">
+                        th:aria-controls="'projBoards' + ${proj.id}">
                     <i class="bi bi-chevron-down small"></i>
                 </button>
             </div>
 
-            <!-- Collapsible board list -->
-            <div class="collapse ms-3 mt-1" th:id="'collapseProj' + ${proj.id}">
+            <div class="collapse ms-3 mt-1"
+                 th:id="'projBoards' + ${proj.id}"
+                 th:classappend="${currentProject != null && currentProject.id == proj.id} ? ' show'">
                 <ul class="nav flex-column small">
-                    <li class="nav-item" th:each="b : ${proj.boards}">
-                        <a class="nav-link"
-                           th:href="@{/projects/{pid}/boards/{bid}(pid=${proj.id},bid=${b.id})}"
-                           th:text="${b.name}"></a>
+                    <li class="nav-item mb-1"
+                        th:each="b : ${proj.boards}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <!-- Board Overview Link -->
+                            <a class="nav-link p-0 flex-grow-1"
+                               th:href="@{/projects/{pid}/boards/{bid}/overview(pid=${proj.id},bid=${b.id})}"
+                               th:text="${b.name}"
+                               th:classappend="${board != null && board.id == b.id} ? 'fw-bold text-success'">
+                            </a>
+                            <!-- Sprint toggle -->
+                            <button class="btn btn-sm btn-light p-0 border-0"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    th:data-bs-target="'#boardSprints' + ${b.id}"
+                                    aria-expanded="false"
+                                    th:aria-controls="'boardSprints' + ${b.id}">
+                                <i class="bi bi-chevron-down small"></i>
+                            </button>
+                        </div>
+
+                        <!-- Sprints under board -->
+                        <div class="collapse ms-3 mt-1"
+                             th:id="'boardSprints' + ${b.id}"
+                             th:classappend="${board != null && board.id == b.id} ? ' show'">
+                            <ul class="nav flex-column extra-small">
+                                <li class="nav-item mb-1"
+                                    th:each="s : ${b.sprints}">
+                                    <a class="nav-link"
+                                       th:href="@{/projects/{pid}/boards/{bid}/sprints/{sid}(pid=${proj.id},bid=${b.id},sid=${s.id})}"
+                                       th:text="${s.name}"
+                                       th:classappend="${sprint != null && sprint.id == s.id} ? 'fw-bold text-success'">
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
                     </li>
                 </ul>
             </div>
@@ -42,4 +79,3 @@
 </nav>
 </body>
 </html>
-

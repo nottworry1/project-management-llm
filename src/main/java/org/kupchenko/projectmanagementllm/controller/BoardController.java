@@ -10,6 +10,7 @@ import org.kupchenko.projectmanagementllm.service.BoardService;
 import org.kupchenko.projectmanagementllm.service.ProjectService;
 import org.kupchenko.projectmanagementllm.service.SprintService;
 import org.kupchenko.projectmanagementllm.service.TaskStatusService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,11 +33,7 @@ public class BoardController {
         return taskStatusService.findAll();
     }
 
-    @ModelAttribute("project")
-    public Project loadProject(@PathVariable("projectId") Long projectId) {
-        return projectService.findById(projectId);
-    }
-
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping
     public String list(@PathVariable Long projectId, Model m) {
         Project project = projectService.findById(projectId);
@@ -44,12 +41,15 @@ public class BoardController {
         return "boards/index";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/create")
-    public String createForm(Model m) {
+    public String createForm(@PathVariable Long projectId, Model m) {
         m.addAttribute("board", new Board());
         return "boards/form";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping
     public String create(@PathVariable Long projectId,
                          @Valid @ModelAttribute("board") Board board,
@@ -70,6 +70,7 @@ public class BoardController {
         return "redirect:/projects/" + project.getId() + "/boards";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{boardId}/edit")
     public String editForm(@PathVariable Long projectId,
                            @PathVariable Long boardId, Model m) {
@@ -80,6 +81,7 @@ public class BoardController {
         return "boards/form";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/{boardId}")
     public String update(@PathVariable Long projectId,
                          @PathVariable Long boardId,
@@ -101,6 +103,7 @@ public class BoardController {
         return "redirect:/projects/" + project.getId() + "/boards";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @PostMapping("/delete/{boardId}")
     public String delete(@PathVariable Long projectId,
                          @PathVariable Long boardId) {
@@ -108,13 +111,16 @@ public class BoardController {
         return "redirect:/projects/" + projectId + "/boards";
     }
 
+    @SuppressWarnings("unused")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{boardId}")
-    public String details(@PathVariable Long boardId, Model m) {
+    public String details(@PathVariable Long projectId, @PathVariable Long boardId, Model m) {
         Board b = boardService.findById(boardId);
         m.addAttribute("board", b);
         return "boards/details";
     }
 
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
     @GetMapping("/{boardId}/overview")
     public String boardOverview(
             @PathVariable Long projectId,
