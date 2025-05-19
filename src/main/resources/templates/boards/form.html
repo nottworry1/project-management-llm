@@ -12,8 +12,8 @@
         <h2 th:text="${board.id} != null ? 'Edit Board' : 'New Board'"></h2>
 
         <form th:action="${board.id} != null
-                    ? '/projects/' + ${project.id} + '/boards/' + ${board.id}
-                    : '/projects/' + ${project.id} + '/boards'"
+                    ? '/projects/' + ${currentProject.id} + '/boards/' + ${board.id}
+                    : '/projects/' + ${currentProject.id} + '/boards'"
               th:object="${board}" method="post">
 
             <div th:replace="~{fragments/form-field :: formField('Board Name', 'name', 'text', *{name})}"></div>
@@ -34,7 +34,7 @@
 
             <button type="submit" class="btn btn-success">Save</button>
             <a class="btn btn-secondary"
-               th:href="@{/projects/{projectId}/boards(projectId=${project.id})}">Cancel</a>
+               th:href="@{/projects/{projectId}/boards(projectId=${currentProject.id})}">Cancel</a>
         </form>
     </main>
 </div>

@@ -114,6 +114,7 @@ public class TaskController {
         task.setAssignee(userService.findById(form.getAssigneeId()));
         task.setReporter(userService.findById(form.getReporterId()));
         task.setPriority(form.getPriority());
+        task.setStoryPoints(form.getStoryPoints());
         taskService.save(task);
         return "redirect:/projects/" + form.getProjectId() + "/tasks/" + taskId;
     }
@@ -239,6 +240,7 @@ public class TaskController {
         task.setAssignee(userService.findById(form.getAssigneeId()));
         task.setReporter(userService.findById(form.getReporterId()));
         task.setProject(projectService.findById(form.getProjectId()));
+        task.setStoryPoints(form.getStoryPoints());
 
         return task;
     }

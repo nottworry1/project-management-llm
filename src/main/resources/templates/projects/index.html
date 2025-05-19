@@ -12,7 +12,7 @@
         <h2>Projects</h2>
         <a class="btn btn-primary mb-3" th:href="@{/projects/create}">Create New Project</a>
         <ul>
-            <li th:each="project : ${projects}">
+            <li th:each="project : ${allProjects}">
                 <a th:href="@{/projects/{id}(id=${project.id})}" th:text="${project.name}"></a>
             </li>
         </ul>

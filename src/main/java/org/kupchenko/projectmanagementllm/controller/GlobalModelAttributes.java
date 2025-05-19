@@ -5,6 +5,7 @@ import org.kupchenko.projectmanagementllm.model.Project;
 import org.kupchenko.projectmanagementllm.model.User;
 import org.kupchenko.projectmanagementllm.service.ProjectService;
 import org.kupchenko.projectmanagementllm.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,7 +25,12 @@ public class GlobalModelAttributes {
     private final ProjectService projectService;
 
     @ModelAttribute("currentProject")
-    public Project loadProject(@PathVariable("projectId") Long projectId) {
+    public Project loadProject(@PathVariable(value = "projectId", required = false) Long projectId) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (isUnauthenticatedOrAnonymous(auth) || projectId == null) {
+            return null;
+        }
         return projectService.findById(projectId);
     }
 

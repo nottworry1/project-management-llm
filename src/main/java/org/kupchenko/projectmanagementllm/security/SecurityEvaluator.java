@@ -22,15 +22,6 @@ public class SecurityEvaluator {
                 .toList().contains(taskId);
     }
 
-    public boolean canAccessBoard(Long boardId) {
-        Set<Project> projects = getCurrentUserProjects();
-
-        return projects.stream()
-                .flatMap(project -> project.getBoards().stream())
-                .map(Board::getId)
-                .toList().contains(boardId);
-    }
-
     public boolean canAccessProject(Long projectId) {
         Set<Project> projects = getCurrentUserProjects();
 
@@ -39,13 +30,13 @@ public class SecurityEvaluator {
                 .toList().contains(projectId);
     }
 
-    public boolean canAccessSprint(Long sprintId) {
-        Set<Project> projects = getCurrentUserProjects();
-
-        return projects.stream()
-                .flatMap(project -> project.getSprints().stream())
-                .map(Sprint::getId)
-                .toList().contains(sprintId);
+    public boolean isProjectOwner(Long projectId) {
+        User user = userService.getCurrentUser();
+        Project project = user.getProjectsOwned().stream()
+                .filter(p -> p.getId().equals(projectId))
+                .findFirst()
+                .orElse(null);
+        return project != null;
     }
 
     private Set<Project> getCurrentUserProjects() {

@@ -24,11 +24,13 @@
                         <p><strong>Tasks:</strong> <span th:text="${currentSprint.tasks.size()}"></span></p>
                         <a th:href="@{/projects/{pid}/boards/{bid}(pid=${project.id},bid=${board.id})}"
                            class="btn btn-primary btn-sm">Go to Board</a>
-                        <a th:href="@{/projects/{pid}/boards/{bid}/edit(pid=${project.id},bid=${board.id})}"
-                           class="btn btn-outline-primary btn-sm">Edit</a>
                     </div>
                     <div th:if="${currentSprint == null}">
                         <p class="text-muted">No active sprint at the moment.</p>
+                    </div>
+                    <div class="pt-2">
+                        <a th:href="@{/projects/{pid}/boards/{bid}/edit(pid=${project.id},bid=${board.id})}"
+                           class="btn btn-outline-primary btn-sm">Edit</a>
                     </div>
                 </div>
             </div>

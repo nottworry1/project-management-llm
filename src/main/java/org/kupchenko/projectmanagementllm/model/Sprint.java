@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,7 +29,7 @@ public class Sprint extends AbstractEntity {
     private Board board;
 
     @ManyToMany(mappedBy = "sprints")
-    private List<Task> tasks;
+    private List<Task> tasks = new ArrayList<>();
 
     @ManyToOne
     private Project project;

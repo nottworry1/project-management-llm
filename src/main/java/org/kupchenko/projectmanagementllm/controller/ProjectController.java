@@ -19,6 +19,11 @@ public class ProjectController {
     private final ProjectService projectService;
     private final UserService userService;
 
+    @GetMapping
+    public String list() {
+        return "projects/index";
+    }
+
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("project", new Project());
@@ -64,14 +69,14 @@ public class ProjectController {
         return "redirect:/projects";
     }
 
-    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId) and @securityEvaluator.isProjectOwner(#projectId)")
     @PostMapping("/delete/{projectId}")
     public String deleteProject(@PathVariable Long projectId) {
         projectService.deleteById(projectId);
         return "redirect:/projects";
     }
 
-    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId) and @securityEvaluator.isProjectOwner(#projectId)")
     @PostMapping("/{projectId}/members/add")
     public String addMemberToProject(@PathVariable Long projectId,
                                      @RequestParam String username) {
@@ -79,7 +84,7 @@ public class ProjectController {
         return "redirect:/projects/" + projectId;
     }
 
-    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId) and @securityEvaluator.isProjectOwner(#projectId)")
     @PostMapping("/{projectId}/owners/add")
     public String promoteToOwner(@PathVariable Long projectId,
                                  @RequestParam Long userId) {
@@ -87,7 +92,7 @@ public class ProjectController {
         return "redirect:/projects/" + projectId;
     }
 
-    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId) and @securityEvaluator.isProjectOwner(#projectId)")
     @PostMapping("/{projectId}/owners/remove")
     public String demoteOwner(@PathVariable Long projectId,
                               @RequestParam Long userId) {
@@ -95,7 +100,7 @@ public class ProjectController {
         return "redirect:/projects/" + projectId;
     }
 
-    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId)")
+    @PreAuthorize("@securityEvaluator.canAccessProject(#projectId) and @securityEvaluator.isProjectOwner(#projectId)")
     @PostMapping("/{projectId}/members/remove")
     public String removeMember(@PathVariable Long projectId, @RequestParam Long userId) {
         projectService.removeMember(projectId, userId);
