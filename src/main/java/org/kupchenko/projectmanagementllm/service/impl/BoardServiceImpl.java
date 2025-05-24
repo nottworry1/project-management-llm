@@ -69,10 +69,10 @@ public class BoardServiceImpl implements BoardService {
             throw new IllegalArgumentException("Sprint can't be closed - it is either not current, or already closed");
         }
 
-        String summary = sprintAnalysisService.analyzeSprint(sprint);
 
         sprint.setEndDate(LocalDateTime.now());
         sprint.setClosed(true);
+        String summary = sprintAnalysisService.analyzeSprint(sprint);
         sprint.setSummary(summary);
 
         board.setCurrentSprint(null);

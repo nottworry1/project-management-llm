@@ -10,7 +10,6 @@ import org.kupchenko.projectmanagementllm.model.Task;
 import org.kupchenko.projectmanagementllm.service.LabelService;
 import org.kupchenko.projectmanagementllm.service.LabelSuggestService;
 import org.kupchenko.projectmanagementllm.service.LlmService;
-import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +26,9 @@ public class LabelSuggestServiceAIImpl implements LabelSuggestService {
     @Override
     public Label suggestLabel(Task task) {
         try {
-            List<Label> existingLabels = labelService.findAll();
+            List<String> existingLabels = labelService.findAll().stream()
+                    .map(Label::getName)
+                    .toList();
 
             TaskSuggestLabelDto taskSuggestLabelDto = TaskSuggestLabelDto.builder()
                     .title(task.getTitle())

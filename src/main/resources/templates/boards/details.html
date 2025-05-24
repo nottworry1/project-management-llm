@@ -32,9 +32,7 @@
                 </form>
             </div>
         </div>
-
-
-        <div id="kanban" class="d-flex flex-grow-1 overflow-auto gap-3">
+        <div th:if="${board.currentSprint != null}" id="kanban" class="d-flex flex-grow-1 overflow-auto gap-3">
             <div th:each="status : ${taskStatuses}"
                  class="flex-fill d-flex flex-column bg-white rounded shadow-sm"
                  style="min-width: 250px; max-width: 300px;">
@@ -77,10 +75,10 @@
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div th:if="${board.currentSprint == null}" class="text-center text-muted mt-3">
-                No sprint selected
-            </div>
+        <div th:if="${board.currentSprint == null}" class="text-center text-muted mt-3">
+            No sprint selected
         </div>
     </div>
 </div>
