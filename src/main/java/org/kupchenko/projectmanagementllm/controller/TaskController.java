@@ -13,6 +13,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Controller
@@ -109,6 +110,10 @@ public class TaskController {
         }
 
         Task task = taskService.findById(taskId);
+        if (!task.getTaskStatus().getId().equals(form.getTaskStatusId()))
+        {
+            task.setStatusChangedAt(LocalDateTime.now());
+        }
         task.setTaskStatus(taskStatusService.findById(form.getTaskStatusId()));
         task.setTitle(form.getTitle());
         task.setAssignee(userService.findById(form.getAssigneeId()));

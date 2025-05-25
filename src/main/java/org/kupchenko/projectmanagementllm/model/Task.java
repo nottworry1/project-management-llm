@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -47,6 +48,8 @@ public class Task extends AbstractEntity {
     private Label label;
 
     private Integer storyPoints;
+
+    private LocalDateTime statusChangedAt;
 
     public boolean isCompleted() {
         return taskStatus != null && taskStatus.getName().equalsIgnoreCase("done");

@@ -61,7 +61,7 @@ public class SprintAnalysisServiceAIImpl implements SprintAnalysisService {
                 .sum();
         double avgCycle = tasks.stream()
                 .filter(t -> "DONE".equalsIgnoreCase(t.getTaskStatus().getName()))
-                .mapToLong(t -> ChronoUnit.DAYS.between(t.getCreatedAt().toLocalDateTime(), t.getUpdatedAt().toLocalDateTime()))
+                .mapToLong(t -> ChronoUnit.DAYS.between(t.getCreatedAt().toLocalDateTime(), t.getStatusChangedAt()))
                 .average()
                 .orElse(0.0);
         String blockers = tasks.stream()
