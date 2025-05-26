@@ -60,4 +60,9 @@ public class Task extends AbstractEntity {
         MEDIUM,
         HIGH
     }
+
+    public String getTaskDetails() {
+        return String.format("Task ID: %d, Title: %s, Description: %s, Priority: %s, Status: %s",
+                getId(), title, description, priority, taskStatus != null ? taskStatus.getName() : "N/A");
+    }
 }

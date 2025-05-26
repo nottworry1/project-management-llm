@@ -61,6 +61,7 @@ public class SprintAnalysisServiceAIImpl implements SprintAnalysisService {
                 .sum();
         double avgCycle = tasks.stream()
                 .filter(t -> "DONE".equalsIgnoreCase(t.getTaskStatus().getName()))
+                .filter(t -> t.getCreatedAt() != null && t.getStatusChangedAt() != null)
                 .mapToLong(t -> ChronoUnit.DAYS.between(t.getCreatedAt().toLocalDateTime(), t.getStatusChangedAt()))
                 .average()
                 .orElse(0.0);
@@ -70,7 +71,9 @@ public class SprintAnalysisServiceAIImpl implements SprintAnalysisService {
                 .filter(txt -> txt.toLowerCase().contains("block"))
                 .limit(5)
                 .collect(Collectors.joining("; "));
-
+        List<String> taskDetails = tasks.stream()
+                .map(Task::getTaskDetails)
+                .toList();
         Map<String, String> vars = new HashMap<>();
         vars.put("name", sprint.getName());
         vars.put("start", sprint.getStartDate().toLocalDate().toString());
@@ -81,6 +84,7 @@ public class SprintAnalysisServiceAIImpl implements SprintAnalysisService {
         vars.put("donePoints", String.valueOf(donePoints));
         vars.put("avgCycle", String.format("%.1f", avgCycle));
         vars.put("blockerSnippets", blockers);
+        vars.put("taskDetails", String.join("\n", taskDetails));
         return vars;
     }
 
