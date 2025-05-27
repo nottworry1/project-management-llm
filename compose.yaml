@@ -1,11 +1,11 @@
 services:
-  postgres:
-    image: 'postgres:16'
-    hostname: 'postgres'
+  mysql:
+    image: 'mysql:8'
+    hostname: 'mysql'
     environment:
-      POSTGRES_DB: pmllm
-      POSTGRES_PASSWORD: secret
-      POSTGRES_USER: pmuser
-      PGUSER: pmuser
+      MYSQL_DATABASE: pmllm
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: pmuser
+      MYSQL_PASSWORD: secret
     ports:
-      - '5432:5432'
+      - '3306:3306'
