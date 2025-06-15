@@ -31,10 +31,6 @@ public class Board extends AbstractEntity {
     @JoinColumn(nullable = false)
     private Project project;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("position ASC")
-    private List<BoardTaskStatus> boardStatuses = new ArrayList<>();
-
     public void addSprint(Sprint sprint) {
         sprints.add(sprint);
         sprint.setBoard(this);

@@ -20,6 +20,6 @@ Your task:
    - One actionable recommendation for the next sprint.
 
 Constraints (follow them strictly without deviation):
-- Return exactly 5 sentences.
+- Make sure to return exactly 5 sentences, without any deviation.
 - Do not include any additional explanation or labels.
 - Use professional, clear language.

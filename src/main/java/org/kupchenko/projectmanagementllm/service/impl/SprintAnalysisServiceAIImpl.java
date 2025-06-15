@@ -30,9 +30,7 @@ public class SprintAnalysisServiceAIImpl implements SprintAnalysisService {
             String template = loadTemplate("prompts/sprint-analysis.txt");
             Map<String, String> stats = collectStats(sprint);
             String prompt = populateTemplate(template, stats);
-            System.out.println("Prompt: " + prompt);
             String result = llmService.getResponse(prompt);
-            System.out.println("Result: " + result);
             return result;
         } catch (IOException e) {
             throw new RuntimeException("Failed to analyze sprint: cannot load template", e);
